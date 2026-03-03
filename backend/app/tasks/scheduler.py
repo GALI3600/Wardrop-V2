@@ -34,6 +34,7 @@ def start_scheduler():
         hours=1,
         id="scrape_tracked_products",
         replace_existing=True,
+        max_instances=1,
     )
     scheduler.start()
     logger.info("Scheduler started — scraping every 1 hour")

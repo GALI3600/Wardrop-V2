@@ -112,8 +112,18 @@ async def scrape_product(db: Session, product: Product):
         logger.error("Scrape failed for %s: %s", product.url, e)
 
 
+MAX_CONCURRENT_SCRAPES = 10
+
+
 async def scrape_all_tracked_products(db: Session):
-    """Scrape all products that have at least one user tracking them."""
+    """Scrape all products that have at least one user tracking them.
+
+    Uses asyncio.gather with a semaphore to scrape up to
+    MAX_CONCURRENT_SCRAPES products in parallel.  Each task gets its own
+    DB session so there are no shared-session issues.
+    """
+    from app.db.database import SessionLocal
+
     tracked_product_ids = db.execute(
         select(UserProduct.product_id).distinct()
     ).scalars().all()
@@ -122,11 +132,28 @@ async def scrape_all_tracked_products(db: Session):
         logger.info("No tracked products to scrape")
         return
 
-    products = db.execute(
-        select(Product).where(Product.id.in_(tracked_product_ids))
+    product_ids = db.execute(
+        select(Product.id).where(Product.id.in_(tracked_product_ids))
     ).scalars().all()
 
-    logger.info("Scraping %d tracked products...", len(products))
+    logger.info("Scraping %d tracked products (concurrency=%d)...", len(product_ids), MAX_CONCURRENT_SCRAPES)
 
-    for product in products:
-        await scrape_product(db, product)
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_SCRAPES)
+    start = asyncio.get_event_loop().time()
+
+    async def _bounded_scrape(product_id: int):
+        async with semaphore:
+            session = SessionLocal()
+            try:
+                product = session.execute(
+                    select(Product).where(Product.id == product_id)
+                ).scalar_one_or_none()
+                if product:
+                    await scrape_product(session, product)
+            finally:
+                session.close()
+
+    await asyncio.gather(*[_bounded_scrape(pid) for pid in product_ids])
+
+    elapsed = asyncio.get_event_loop().time() - start
+    logger.info("Scrape batch finished: %d products in %.1fs", len(product_ids), elapsed)
