@@ -36,8 +36,8 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   return (
     <aside className="w-full lg:w-64 shrink-0 space-y-6">
-      <div className="bg-slate-800 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-slate-300 mb-3">Marketplace</h3>
+      <div className="bg-[var(--bg-card)] rounded-xl p-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">Marketplace</h3>
         <div className="space-y-2">
           <label className="flex items-center gap-2 cursor-pointer text-sm">
             <input
@@ -45,9 +45,9 @@ export default function FilterSidebar({
               name="marketplace"
               checked={selectedMarketplace === ""}
               onChange={() => onMarketplaceChange("")}
-              className="accent-indigo-500"
+              className="accent-[var(--accent)]"
             />
-            <span className="text-slate-300">Todos</span>
+            <span className="text-[var(--text-primary)]">Todos</span>
           </label>
           {marketplaces.map((mp) => (
             <label key={mp.name} className="flex items-center gap-2 cursor-pointer text-sm">
@@ -56,41 +56,41 @@ export default function FilterSidebar({
                 name="marketplace"
                 checked={selectedMarketplace === mp.name}
                 onChange={() => onMarketplaceChange(mp.name)}
-                className="accent-indigo-500"
+                className="accent-[var(--accent)]"
               />
               <span
                 className="w-2 h-2 rounded-full inline-block"
                 style={{ background: MARKETPLACE_COLORS[mp.name] || "#6366f1" }}
               />
-              <span className="text-slate-300 capitalize">{mp.name}</span>
-              <span className="text-slate-500 ml-auto">({mp.count})</span>
+              <span className="text-[var(--text-primary)] capitalize">{mp.name}</span>
+              <span className="text-[var(--text-muted)] ml-auto">({mp.count})</span>
             </label>
           ))}
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-slate-300 mb-3">Faixa de Preço</h3>
+      <div className="bg-[var(--bg-card)] rounded-xl p-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">Faixa de Preço</h3>
         <div className="flex gap-2 items-center">
           <input
             type="number"
             placeholder="Min"
             value={minPrice}
             onChange={(e) => onMinPriceChange(e.target.value)}
-            className="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-[var(--bg-input)] border border-[var(--border-color)] rounded px-2 py-1.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
           />
-          <span className="text-slate-500">—</span>
+          <span className="text-[var(--text-muted)]">—</span>
           <input
             type="number"
             placeholder="Max"
             value={maxPrice}
             onChange={(e) => onMaxPriceChange(e.target.value)}
-            className="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-[var(--bg-input)] border border-[var(--border-color)] rounded px-2 py-1.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
           />
         </div>
         <button
           onClick={onApplyPrice}
-          className="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded py-1.5 transition"
+          className="mt-2 w-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm rounded py-1.5 transition"
         >
           Aplicar
         </button>

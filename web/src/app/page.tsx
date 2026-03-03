@@ -95,13 +95,13 @@ function HomeContent() {
         </div>
 
         {filtersData && (
-          <p className="text-xs text-slate-500 mb-4">
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             {data?.total ?? 0} produto(s) encontrado(s)
           </p>
         )}
 
         {isLoading ? (
-          <div className="text-center py-20 text-slate-500">Carregando...</div>
+          <div className="text-center py-20 text-[var(--text-muted)]">Carregando...</div>
         ) : (
           <>
             <ProductGrid products={data?.products || []} />
@@ -119,7 +119,7 @@ function HomeContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="text-center py-20 text-slate-500">Carregando...</div>}>
+    <Suspense fallback={<div className="text-center py-20 text-[var(--text-muted)]">Carregando...</div>}>
       <HomeContent />
     </Suspense>
   );

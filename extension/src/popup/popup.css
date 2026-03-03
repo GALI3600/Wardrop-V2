@@ -8,8 +8,8 @@ body {
   width: 360px;
   min-height: 400px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #0f0f23;
-  color: #e2e8f0;
+  background: var(--bg-body);
+  color: var(--text-primary);
 }
 
 .popup {
@@ -22,18 +22,36 @@ body {
   gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .popup-header h1 {
   font-size: 20px;
   font-weight: 700;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .popup-subtitle {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
+}
+
+.theme-toggle {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.theme-toggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-input);
 }
 
 .section {
@@ -43,7 +61,7 @@ body {
 .section h2 {
   font-size: 14px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -51,7 +69,7 @@ body {
 }
 
 .badge {
-  background: #6366f1;
+  background: var(--accent);
   color: #fff;
   font-size: 11px;
   padding: 2px 8px;
@@ -59,7 +77,7 @@ body {
 }
 
 .product-card {
-  background: #1e293b;
+  background: var(--bg-card);
   border-radius: 8px;
   padding: 12px;
   cursor: pointer;
@@ -67,7 +85,7 @@ body {
 }
 
 .product-card:hover {
-  background: #253349;
+  background: var(--bg-hover);
 }
 
 .product-card-row {
@@ -79,7 +97,7 @@ body {
 .product-card-chart {
   display: none;
   padding-top: 10px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border-color);
   margin-top: 10px;
 }
 
@@ -94,7 +112,7 @@ body {
 
 .chart-loading {
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-muted);
   text-align: center;
   padding: 16px 0;
 }
@@ -116,7 +134,7 @@ body {
 
 .product-card .product-name {
   font-size: 13px;
-  color: #e2e8f0;
+  color: var(--text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,12 +144,12 @@ body {
 .product-card .product-price {
   font-size: 18px;
   font-weight: 700;
-  color: #4ade80;
+  color: var(--price-color);
 }
 
 .product-card .product-marketplace {
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
@@ -147,8 +165,8 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: #94a3b8;
-  background: #334155;
+  color: var(--badge-text);
+  background: var(--badge-bg);
   padding: 1px 5px;
   border-radius: 3px;
 }
@@ -160,7 +178,7 @@ body {
   max-height: 300px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #334155 transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .products-list::-webkit-scrollbar {
@@ -172,17 +190,17 @@ body {
 }
 
 .products-list::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
 .products-list::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--bg-hover);
 }
 
 .empty-state {
   font-size: 13px;
-  color: #475569;
+  color: var(--text-muted);
   text-align: center;
   padding: 20px 0;
 }
@@ -191,7 +209,7 @@ body {
   display: flex;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid var(--border-color);
 }
 
 .btn-primary,
@@ -207,21 +225,21 @@ body {
 }
 
 .btn-primary {
-  background: #6366f1;
+  background: var(--accent);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: #4f46e5;
+  background: var(--accent-hover);
 }
 
 .btn-secondary {
-  background: #1e293b;
-  color: #e2e8f0;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .btn-secondary:hover {
-  background: #334155;
+  background: var(--bg-input);
 }
 
 /* Auth section */
@@ -236,8 +254,8 @@ body {
   padding: 8px;
   border: none;
   border-radius: 6px;
-  background: #1e293b;
-  color: #64748b;
+  background: var(--bg-card);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -245,7 +263,7 @@ body {
 }
 
 .auth-tab.active {
-  background: #6366f1;
+  background: var(--accent);
   color: #fff;
 }
 
@@ -253,21 +271,21 @@ body {
   width: 100%;
   padding: 10px 12px;
   margin-bottom: 8px;
-  border: 1px solid #334155;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
-  background: #1e293b;
-  color: #e2e8f0;
+  background: var(--input-bg);
+  color: var(--input-text);
   font-size: 13px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .auth-input:focus {
-  border-color: #6366f1;
+  border-color: var(--accent);
 }
 
 .auth-input::placeholder {
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .auth-submit {
@@ -276,8 +294,8 @@ body {
 }
 
 .auth-error {
-  background: #7f1d1d;
-  color: #fca5a5;
+  background: var(--error-bg);
+  color: var(--error-color);
   font-size: 12px;
   padding: 8px 12px;
   border-radius: 6px;
@@ -289,14 +307,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1e293b;
+  background: var(--bg-card);
   padding: 10px 12px;
   border-radius: 8px;
 }
 
 .user-email {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -306,19 +324,19 @@ body {
 .btn-link {
   background: none;
   border: none;
-  color: #6366f1;
+  color: var(--accent);
   font-size: 12px;
   cursor: pointer;
   padding: 4px;
 }
 
 .btn-link:hover {
-  color: #818cf8;
+  color: var(--accent-hover);
 }
 
 .sync-status {
   font-size: 11px;
-  color: #4ade80;
+  color: var(--success-color);
   text-align: center;
   padding: 6px 0;
 }

@@ -1,6 +1,32 @@
 let currentAuthMode = "login";
 
+function getChartColors() {
+  const isDark = document.documentElement.classList.contains("dark");
+  return {
+    grid: isDark ? "#1e293b" : "#e2e8f0",
+    tick: isDark ? "#64748b" : "#94a3b8",
+    legend: isDark ? "#94a3b8" : "#64748b",
+    line: isDark ? "#818cf8" : "#6366f1",
+    fill: isDark ? "rgba(129, 140, 248, 0.1)" : "rgba(99, 102, 241, 0.1)",
+  };
+}
+
+function updateThemeIcon() {
+  const isDark = document.documentElement.classList.contains("dark");
+  const btn = document.getElementById("theme-toggle");
+  if (btn) btn.textContent = isDark ? "\u2600\uFE0F" : "\uD83C\uDF19";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  // Init theme
+  await themeManager.init();
+  updateThemeIcon();
+
+  document.getElementById("theme-toggle").addEventListener("click", async () => {
+    await themeManager.toggle();
+    updateThemeIcon();
+  });
+
   await updateAuthUI();
   await loadTrackedProducts();
 
@@ -366,6 +392,7 @@ const POPUP_MARKETPLACE_COLORS = {
 };
 
 function renderPopupSingleChart(history, canvasId, idx) {
+  const colors = getChartColors();
   const ctx = document.getElementById(canvasId).getContext("2d");
   const labels = history.map((h) =>
     new Date(h.scraped_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
@@ -378,8 +405,8 @@ function renderPopupSingleChart(history, canvasId, idx) {
       labels,
       datasets: [{
         data: prices,
-        borderColor: "#6366f1",
-        backgroundColor: "rgba(99, 102, 241, 0.1)",
+        borderColor: colors.line,
+        backgroundColor: colors.fill,
         fill: true,
         tension: 0.3,
         pointRadius: 2,
@@ -397,11 +424,11 @@ function renderPopupSingleChart(history, canvasId, idx) {
       },
       scales: {
         y: {
-          ticks: { callback: (v) => `R$${v}`, color: "#64748b", font: { size: 9 } },
-          grid: { color: "#1e293b" },
+          ticks: { callback: (v) => `R$${v}`, color: colors.tick, font: { size: 9 } },
+          grid: { color: colors.grid },
         },
         x: {
-          ticks: { color: "#64748b", font: { size: 9 }, maxTicksLimit: 5 },
+          ticks: { color: colors.tick, font: { size: 9 }, maxTicksLimit: 5 },
           grid: { display: false },
         },
       },
@@ -410,6 +437,7 @@ function renderPopupSingleChart(history, canvasId, idx) {
 }
 
 function renderPopupComparisonChart(priceHistories, canvasId, idx) {
+  const colors = getChartColors();
   const ctx = document.getElementById(canvasId).getContext("2d");
   const allDates = new Set();
   for (const history of Object.values(priceHistories)) {
@@ -446,18 +474,18 @@ function renderPopupComparisonChart(priceHistories, canvasId, idx) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { color: "#94a3b8", font: { size: 9 }, boxWidth: 8 } },
+        legend: { display: true, labels: { color: colors.legend, font: { size: 9 }, boxWidth: 8 } },
         tooltip: {
           callbacks: { label: (ctx) => `${ctx.dataset.label}: R$ ${ctx.parsed.y.toFixed(2)}` },
         },
       },
       scales: {
         y: {
-          ticks: { callback: (v) => `R$${v}`, color: "#64748b", font: { size: 9 } },
-          grid: { color: "#1e293b" },
+          ticks: { callback: (v) => `R$${v}`, color: colors.tick, font: { size: 9 } },
+          grid: { color: colors.grid },
         },
         x: {
-          ticks: { color: "#64748b", font: { size: 9 }, maxTicksLimit: 5 },
+          ticks: { color: colors.tick, font: { size: 9 }, maxTicksLimit: 5 },
           grid: { display: false },
         },
       },

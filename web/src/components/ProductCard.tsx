@@ -29,7 +29,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="block">
-      <div className="bg-slate-800 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30 transition-all duration-200 cursor-pointer h-full flex flex-col">
+      <div className="bg-[var(--bg-card)] rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-200 cursor-pointer h-full flex flex-col" style={{ boxShadow: "var(--shadow)" }}>
         {product.image_url ? (
           <div className="bg-white p-3 h-44 flex items-center justify-center">
             <img
@@ -39,7 +39,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           </div>
         ) : (
-          <div className="bg-slate-700 h-20" />
+          <div className="bg-[var(--bg-input)] h-20" />
         )}
         <div className="p-4 flex flex-col flex-1 gap-2">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -66,21 +66,21 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
             <BestPriceBadge isAtLowest={product.is_at_lowest} />
           </div>
-          <p className="text-sm font-medium text-slate-200 line-clamp-2 flex-1" title={product.name || ""}>
+          <p className="text-sm font-medium text-[var(--text-primary)] line-clamp-2 flex-1" title={product.name || ""}>
             {product.name || "Produto"}
           </p>
           <div className="flex items-end justify-between gap-2">
             <div>
               {isGrouped && product.price_max ? (
-                <p className="text-xl font-bold text-emerald-400">
+                <p className="text-xl font-bold text-[var(--price-color)]">
                   R$ {Number(product.current_price || 0).toFixed(2)}
-                  <span className="text-base font-normal text-slate-400"> — </span>
-                  <span className="text-base text-slate-300">
+                  <span className="text-base font-normal text-[var(--text-secondary)]"> — </span>
+                  <span className="text-base text-[var(--text-primary)]">
                     R$ {Number(product.price_max).toFixed(2)}
                   </span>
                 </p>
               ) : (
-                <p className="text-xl font-bold text-emerald-400">
+                <p className="text-xl font-bold text-[var(--price-color)]">
                   R$ {Number(product.current_price || 0).toFixed(2)}
                 </p>
               )}
