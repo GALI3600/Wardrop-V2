@@ -143,3 +143,14 @@
 .wardrop-btn--active:hover {
   background: #15803d;
 }
+
+/* ─── FAB tracked state ────────────────────────────────── */
+
+.wardrop-fab--tracked {
+  background: #16a34a;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4);
+}
+
+.wardrop-fab--tracked:hover {
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5);
+}
