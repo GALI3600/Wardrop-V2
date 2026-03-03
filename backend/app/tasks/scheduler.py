@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import timezone, timedelta
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -8,7 +9,8 @@ from app.services.scraper import scrape_all_tracked_products
 
 logger = logging.getLogger(__name__)
 
-scheduler = AsyncIOScheduler()
+BRT = timezone(timedelta(hours=-3))
+scheduler = AsyncIOScheduler(timezone=BRT)
 
 
 async def run_scrape_job():

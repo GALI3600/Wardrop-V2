@@ -15,6 +15,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      TZ: America/Sao_Paulo
       WARDROP_DATABASE_URL: postgresql://wardrop:wardrop@db:5432/wardrop
     depends_on:
       - db
