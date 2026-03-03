@@ -50,6 +50,7 @@ function createTrackButton(product) {
     if (isTracked) {
       btn.textContent = "Acompanhando ✓";
       btn.classList.add("wardrop-btn--active");
+      document.getElementById("wardrop-fab").classList.add("wardrop-fab--tracked");
     }
   });
 
@@ -65,6 +66,7 @@ function createTrackButton(product) {
         if (response && response.success) {
           btn.textContent = "Acompanhando ✓";
           btn.classList.add("wardrop-btn--active");
+          document.getElementById("wardrop-fab").classList.add("wardrop-fab--tracked");
         }
       }
     );

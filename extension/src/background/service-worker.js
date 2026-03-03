@@ -24,17 +24,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function handleParseProduct({ html, url, marketplace, image_url }) {
-  const response = await fetch(`${API_BASE}/products/parse`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html, url, image_url }),
-  });
+  const [response] = await Promise.all([
+    fetch(`${API_BASE}/products/parse`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ html, url, image_url }),
+    }),
+    syncTrackedProducts(),
+  ]);
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`);
   }
 
   return response.json();
+}
+
+async function syncTrackedProducts() {
+  const { token } = await chrome.storage.local.get("token");
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/tracking/products`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const trackedProducts = await res.json();
+      await chrome.storage.local.set({ trackedProducts });
+    }
+  } catch {}
 }
 
 async function handleTrackProduct(product) {
