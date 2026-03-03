@@ -16,17 +16,17 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        className="p-2 rounded-lg bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)] disabled:opacity-30 disabled:cursor-not-allowed transition"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
-      <span className="text-sm text-slate-400 px-3">
+      <span className="text-sm text-[var(--text-secondary)] px-3">
         {page} / {totalPages}
       </span>
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        className="p-2 rounded-lg bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)] disabled:opacity-30 disabled:cursor-not-allowed transition"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

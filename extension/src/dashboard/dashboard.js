@@ -16,7 +16,33 @@ function getMarketplaceColor(marketplace) {
   return MARKETPLACE_COLORS[marketplace] || "#6366f1";
 }
 
+function getChartColors() {
+  const isDark = document.documentElement.classList.contains("dark");
+  return {
+    grid: isDark ? "#1e293b" : "#e2e8f0",
+    tick: isDark ? "#94a3b8" : "#64748b",
+    legend: isDark ? "#94a3b8" : "#64748b",
+    line: isDark ? "#818cf8" : "#6366f1",
+    fill: isDark ? "rgba(129, 140, 248, 0.1)" : "rgba(99, 102, 241, 0.1)",
+  };
+}
+
+function updateThemeIcon() {
+  const isDark = document.documentElement.classList.contains("dark");
+  const btn = document.getElementById("theme-toggle");
+  if (btn) btn.textContent = isDark ? "\u2600\uFE0F" : "\uD83C\uDF19";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  // Init theme
+  await themeManager.init();
+  updateThemeIcon();
+
+  document.getElementById("theme-toggle").addEventListener("click", async () => {
+    await themeManager.toggle();
+    updateThemeIcon();
+  });
+
   await loadProducts();
   setupNavigation();
 });
@@ -276,6 +302,7 @@ async function showProductDetail(productId) {
 }
 
 function renderSinglePriceChart(history, canvasId) {
+  const colors = getChartColors();
   const ctx = document.getElementById(canvasId).getContext("2d");
 
   if (currentChart) {
@@ -298,8 +325,8 @@ function renderSinglePriceChart(history, canvasId) {
         {
           label: "Preço",
           data: prices,
-          borderColor: "#6366f1",
-          backgroundColor: "rgba(99, 102, 241, 0.1)",
+          borderColor: colors.line,
+          backgroundColor: colors.fill,
           fill: true,
           tension: 0.3,
           pointRadius: 3,
@@ -321,13 +348,13 @@ function renderSinglePriceChart(history, canvasId) {
         y: {
           ticks: {
             callback: (val) => `R$ ${val}`,
-            color: "#94a3b8",
+            color: colors.tick,
           },
-          grid: { color: "#1e293b" },
+          grid: { color: colors.grid },
         },
         x: {
-          ticks: { color: "#94a3b8" },
-          grid: { color: "#1e293b" },
+          ticks: { color: colors.tick },
+          grid: { color: colors.grid },
         },
       },
     },
@@ -337,6 +364,7 @@ function renderSinglePriceChart(history, canvasId) {
 // ─── Comparison Chart ───────────────────────────────────────
 
 function renderComparisonChart(priceHistories, canvasId) {
+  const colors = getChartColors();
   const ctx = document.getElementById(canvasId).getContext("2d");
 
   if (currentChart) {
@@ -384,7 +412,7 @@ function renderComparisonChart(priceHistories, canvasId) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#94a3b8" },
+          labels: { color: colors.legend },
         },
         tooltip: {
           callbacks: {
@@ -396,13 +424,13 @@ function renderComparisonChart(priceHistories, canvasId) {
         y: {
           ticks: {
             callback: (val) => `R$ ${val}`,
-            color: "#94a3b8",
+            color: colors.tick,
           },
-          grid: { color: "#1e293b" },
+          grid: { color: colors.grid },
         },
         x: {
-          ticks: { color: "#94a3b8" },
-          grid: { color: "#1e293b" },
+          ticks: { color: colors.tick },
+          grid: { color: colors.grid },
         },
       },
     },

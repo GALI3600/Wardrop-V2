@@ -11,6 +11,15 @@ function createTrackButton(product) {
   const container = document.createElement("div");
   container.id = "wardrop-track-btn";
   container.className = "wardrop-collapsed";
+
+  // Apply theme from storage
+  chrome.storage.local.get("wardrop-theme", (result) => {
+    const theme = result["wardrop-theme"] || "light";
+    if (theme === "dark") {
+      container.classList.add("dark");
+    }
+  });
+
   container.innerHTML = `
     <div class="wardrop-fab" id="wardrop-fab">
       <span class="wardrop-fab-icon">W</span>
@@ -48,7 +57,7 @@ function createTrackButton(product) {
     );
     const btn = document.getElementById("wardrop-follow-btn");
     if (isTracked) {
-      btn.textContent = "Acompanhando ✓";
+      btn.textContent = "Acompanhando \u2713";
       btn.classList.add("wardrop-btn--active");
       document.getElementById("wardrop-fab").classList.add("wardrop-fab--tracked");
     }
@@ -64,7 +73,7 @@ function createTrackButton(product) {
       (response) => {
         const btn = document.getElementById("wardrop-follow-btn");
         if (response && response.success) {
-          btn.textContent = "Acompanhando ✓";
+          btn.textContent = "Acompanhando \u2713";
           btn.classList.add("wardrop-btn--active");
           document.getElementById("wardrop-fab").classList.add("wardrop-fab--tracked");
         }

@@ -9,7 +9,7 @@ export default function TrendIndicator({ pct }: TrendIndicatorProps) {
 
   if (Math.abs(pct) < 0.5) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+      <span className="inline-flex items-center gap-1 text-xs text-[var(--text-secondary)]">
         <Minus className="w-3 h-3" />
         {pct.toFixed(1)}%
       </span>
@@ -18,7 +18,7 @@ export default function TrendIndicator({ pct }: TrendIndicatorProps) {
 
   if (pct < 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-xs text-[var(--price-down)]">
         <TrendingDown className="w-3 h-3" />
         {pct.toFixed(1)}%
       </span>
@@ -26,7 +26,7 @@ export default function TrendIndicator({ pct }: TrendIndicatorProps) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1 text-xs text-red-400">
+    <span className="inline-flex items-center gap-1 text-xs text-[var(--price-up)]">
       <TrendingUp className="w-3 h-3" />
       +{pct.toFixed(1)}%
     </span>
