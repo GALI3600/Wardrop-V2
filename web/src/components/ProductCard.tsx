@@ -1,0 +1,99 @@
+import Link from "next/link";
+import type { ProductListItem } from "@/lib/types";
+import SparklineChart from "./SparklineChart";
+import TrendIndicator from "./TrendIndicator";
+import BestPriceBadge from "./BestPriceBadge";
+
+const MARKETPLACE_COLORS: Record<string, string> = {
+  amazon: "#ff9900",
+  mercadolivre: "#ffe600",
+  magalu: "#0086ff",
+  shopee: "#ee4d2d",
+  casasbahia: "#0060a8",
+  americanas: "#e60014",
+  kabum: "#ff6500",
+  aliexpress: "#e43225",
+};
+
+function getMpColor(mp: string | null) {
+  return MARKETPLACE_COLORS[mp || ""] || "#6366f1";
+}
+
+interface ProductCardProps {
+  product: ProductListItem;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const isGrouped = product.marketplace_prices.length > 1;
+  const primaryColor = getMpColor(product.marketplace);
+
+  return (
+    <Link href={`/products/${product.id}`} className="block">
+      <div className="bg-slate-800 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30 transition-all duration-200 cursor-pointer h-full flex flex-col">
+        {product.image_url ? (
+          <div className="bg-white p-3 h-44 flex items-center justify-center">
+            <img
+              src={product.image_url}
+              alt={product.name || "Produto"}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        ) : (
+          <div className="bg-slate-700 h-20" />
+        )}
+        <div className="p-4 flex flex-col flex-1 gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {isGrouped ? (
+              product.marketplace_prices.map((mp) => {
+                const color = getMpColor(mp.marketplace);
+                return (
+                  <span
+                    key={mp.product_id}
+                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                    style={{ background: color + "20", color }}
+                  >
+                    {mp.marketplace || "—"}
+                  </span>
+                );
+              })
+            ) : (
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                style={{ background: primaryColor + "20", color: primaryColor }}
+              >
+                {product.marketplace || "—"}
+              </span>
+            )}
+            <BestPriceBadge isAtLowest={product.is_at_lowest} />
+          </div>
+          <p className="text-sm font-medium text-slate-200 line-clamp-2 flex-1" title={product.name || ""}>
+            {product.name || "Produto"}
+          </p>
+          <div className="flex items-end justify-between gap-2">
+            <div>
+              {isGrouped && product.price_max ? (
+                <p className="text-xl font-bold text-emerald-400">
+                  R$ {Number(product.current_price || 0).toFixed(2)}
+                  <span className="text-base font-normal text-slate-400"> — </span>
+                  <span className="text-base text-slate-300">
+                    R$ {Number(product.price_max).toFixed(2)}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-xl font-bold text-emerald-400">
+                  R$ {Number(product.current_price || 0).toFixed(2)}
+                </p>
+              )}
+              <TrendIndicator pct={product.price_change_pct} />
+            </div>
+            {product.sparkline.length >= 2 && (
+              <div className="w-20">
+                <SparklineChart data={product.sparkline} color={primaryColor} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}

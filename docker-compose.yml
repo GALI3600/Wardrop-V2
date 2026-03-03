@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: wardrop
+      POSTGRES_PASSWORD: wardrop
+      POSTGRES_DB: wardrop
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      WARDROP_DATABASE_URL: postgresql://wardrop:wardrop@db:5432/wardrop
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  pgdata:

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wardrop</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <div class="popup-header">
+      <h1>Wardrop</h1>
+      <span class="popup-subtitle">Price Tracker</span>
+    </div>
+
+    <!-- Auth section (login/register form) -->
+    <div id="auth-section" class="section" style="display: none;">
+      <div id="auth-form">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Login</button>
+          <button class="auth-tab" data-tab="register">Registrar</button>
+        </div>
+        <div id="auth-error" class="auth-error" style="display: none;"></div>
+        <input type="email" id="auth-email" placeholder="Email" class="auth-input" />
+        <input type="password" id="auth-password" placeholder="Senha" class="auth-input" />
+        <button id="auth-submit" class="btn-primary auth-submit">Entrar</button>
+      </div>
+    </div>
+
+    <!-- User info (shown when logged in) -->
+    <div id="user-section" class="section" style="display: none;">
+      <div class="user-info">
+        <span id="user-email" class="user-email"></span>
+        <button id="logout-btn" class="btn-link">Sair</button>
+      </div>
+      <div id="sync-status" class="sync-status" style="display: none;">
+        Sincronizando produtos...
+      </div>
+    </div>
+
+    <div id="current-product" class="section" style="display: none;">
+      <h2>Produto atual</h2>
+      <div id="product-info" class="product-card"></div>
+    </div>
+
+    <div id="tracked-list" class="section">
+      <h2>Acompanhando <span id="tracked-count" class="badge">0</span></h2>
+      <div id="tracked-products" class="products-list">
+        <p class="empty-state">Nenhum produto acompanhado ainda.</p>
+      </div>
+    </div>
+
+    <div class="popup-footer">
+      <button id="open-dashboard" class="btn-secondary">Dashboard</button>
+      <button id="login-btn" class="btn-primary">Login</button>
+    </div>
+  </div>
+
+  <script src="../lib/chart.min.js"></script>
+  <script src="../lib/api.js"></script>
+  <script src="../lib/auth.js"></script>
+  <script src="../lib/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wardrop - Dashboard</title>
+  <script src="../lib/chart.min.js"></script>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard">
+    <header class="dashboard-header">
+      <h1>Wardrop</h1>
+      <nav>
+        <button class="nav-btn active" data-view="products">Produtos</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Products list view -->
+      <section id="products-view" class="view active">
+        <div class="products-grid" id="products-grid">
+          <p class="empty-state">Nenhum produto acompanhado.</p>
+        </div>
+      </section>
+
+      <!-- Single product detail (with inline comparison if grouped) -->
+      <section id="product-detail" class="view" style="display: none;">
+        <button class="back-btn" id="back-btn">&larr; Voltar</button>
+        <div id="detail-info" class="detail-info"></div>
+        <!-- Comparison table (only shown if product has group) -->
+        <div id="detail-comparison" class="comparison-table-container" style="display: none;">
+          <h3 class="section-title">Preços em outros Marketplaces</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Marketplace</th>
+                <th>Preço Atual</th>
+                <th>Menor Preço</th>
+                <th>Vendedor</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody id="detail-comparison-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Chart (single-line or multi-marketplace depending on group) -->
+        <div class="chart-container">
+          <canvas id="detail-chart"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../lib/api.js"></script>
+  <script src="../lib/storage.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Wardrop - Price Tracker",
+  "version": "0.1.0",
+  "description": "Track product prices across marketplaces and get notified about price drops.",
+  "permissions": [
+    "storage",
+    "notifications",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com.br/*",
+        "*://*.mercadolivre.com.br/*",
+        "*://*.magazineluiza.com.br/*",
+        "*://*.shopee.com.br/*",
+        "*://*.casasbahia.com.br/*",
+        "*://*.americanas.com.br/*",
+        "*://*.kabum.com.br/*",
+        "*://*.aliexpress.com/*"
+      ],
+      "js": ["src/content/extractor.js", "src/content/ui.js"],
+      "css": ["src/content/wardrop.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
