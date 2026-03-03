@@ -11,32 +11,35 @@ logger = logging.getLogger(__name__)
 
 BRT = timezone(timedelta(hours=-3))
 scheduler = AsyncIOScheduler(timezone=BRT)
+_scrape_lock = asyncio.Lock()
 
 
 async def run_tracked_scrape_job():
     """Job that re-scrapes products with at least one user tracking them."""
-    logger.info("Scheduled tracked scrape job starting")
-    db = SessionLocal()
-    try:
-        await scrape_all_tracked_products(db)
-        logger.info("Scheduled tracked scrape job completed")
-    except Exception as e:
-        logger.error("Scheduled tracked scrape job failed: %s", e)
-    finally:
-        db.close()
+    async with _scrape_lock:
+        logger.info("Scheduled tracked scrape job starting")
+        db = SessionLocal()
+        try:
+            await scrape_all_tracked_products(db)
+            logger.info("Scheduled tracked scrape job completed")
+        except Exception as e:
+            logger.error("Scheduled tracked scrape job failed: %s", e)
+        finally:
+            db.close()
 
 
 async def run_untracked_scrape_job():
     """Job that re-scrapes products with no users tracking them."""
-    logger.info("Scheduled untracked scrape job starting")
-    db = SessionLocal()
-    try:
-        await scrape_untracked_products(db)
-        logger.info("Scheduled untracked scrape job completed")
-    except Exception as e:
-        logger.error("Scheduled untracked scrape job failed: %s", e)
-    finally:
-        db.close()
+    async with _scrape_lock:
+        logger.info("Scheduled untracked scrape job starting")
+        db = SessionLocal()
+        try:
+            await scrape_untracked_products(db)
+            logger.info("Scheduled untracked scrape job completed")
+        except Exception as e:
+            logger.error("Scheduled untracked scrape job failed: %s", e)
+        finally:
+            db.close()
 
 
 def start_scheduler():
