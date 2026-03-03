@@ -157,3 +157,47 @@ async def scrape_all_tracked_products(db: Session):
 
     elapsed = asyncio.get_event_loop().time() - start
     logger.info("Scrape batch finished: %d products in %.1fs", len(product_ids), elapsed)
+
+
+async def scrape_untracked_products(db: Session):
+    """Scrape products that no user is currently tracking.
+
+    Same concurrency strategy as tracked products.
+    """
+    from app.db.database import SessionLocal
+
+    tracked_product_ids = db.execute(
+        select(UserProduct.product_id).distinct()
+    ).scalars().all()
+
+    query = select(Product.id)
+    if tracked_product_ids:
+        query = query.where(Product.id.notin_(tracked_product_ids))
+
+    product_ids = db.execute(query).scalars().all()
+
+    if not product_ids:
+        logger.info("No untracked products to scrape")
+        return
+
+    logger.info("Scraping %d untracked products (concurrency=%d)...", len(product_ids), MAX_CONCURRENT_SCRAPES)
+
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_SCRAPES)
+    start = asyncio.get_event_loop().time()
+
+    async def _bounded_scrape(product_id: int):
+        async with semaphore:
+            session = SessionLocal()
+            try:
+                product = session.execute(
+                    select(Product).where(Product.id == product_id)
+                ).scalar_one_or_none()
+                if product:
+                    await scrape_product(session, product)
+            finally:
+                session.close()
+
+    await asyncio.gather(*[_bounded_scrape(pid) for pid in product_ids])
+
+    elapsed = asyncio.get_event_loop().time() - start
+    logger.info("Untracked scrape batch finished: %d products in %.1fs", len(product_ids), elapsed)
