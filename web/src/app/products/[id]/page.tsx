@@ -1,26 +1,17 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getProductHistory, getGroupComparison } from "@/lib/api";
 import { SinglePriceChart, ComparisonPriceChart } from "@/components/PriceChart";
 import ComparisonTable from "@/components/ComparisonTable";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
+import MarketplaceBadge from "@/components/MarketplaceBadge";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = params.id as string;
 
   const { data, isLoading } = useQuery({
@@ -44,17 +35,15 @@ export default function ProductDetailPage() {
   }
 
   const { product, history } = data;
-  const mpColor = MARKETPLACE_COLORS[product.marketplace || ""] || "#6366f1";
-
   return (
     <div>
-      <Link
-        href="/"
+      <button
+        onClick={() => router.back()}
         className="inline-flex items-center gap-1 text-[var(--accent)] hover:opacity-80 text-sm mb-6 transition"
       >
         <ArrowLeft className="w-4 h-4" />
         Voltar
-      </Link>
+      </button>
 
       {/* Product info */}
       <div className="bg-[var(--bg-card)] rounded-xl p-6 flex flex-col md:flex-row gap-6" style={{ boxShadow: "var(--shadow)" }}>
@@ -68,12 +57,7 @@ export default function ProductDetailPage() {
           </div>
         )}
         <div className="flex flex-col gap-3 flex-1">
-          <span
-            className="text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded w-fit"
-            style={{ background: mpColor + "20", color: mpColor }}
-          >
-            {product.marketplace || "—"}
-          </span>
+          <MarketplaceBadge marketplace={product.marketplace} />
           <h1 className="text-xl font-bold text-[var(--text-primary)]">
             {product.name || "Produto"}
           </h1>
@@ -108,16 +92,9 @@ export default function ProductDetailPage() {
         </>
       )}
 
-      {/* Single price chart (if not grouped) */}
+      {/* Single price chart (only if not grouped) */}
       {!groupId && history.length > 0 && (
         <SinglePriceChart history={history} />
-      )}
-
-      {/* If grouped, also show the single product history below */}
-      {groupId && history.length > 0 && (
-        <div className="mt-4">
-          <SinglePriceChart history={history} />
-        </div>
       )}
     </div>
   );

@@ -1,17 +1,7 @@
 "use client";
 
 import type { MarketplaceOption } from "@/lib/types";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
+import { getMpFavicon, MARKETPLACE_COLORS } from "@/lib/marketplaces";
 
 interface FilterSidebarProps {
   marketplaces: MarketplaceOption[];
@@ -58,10 +48,14 @@ export default function FilterSidebar({
                 onChange={() => onMarketplaceChange(mp.name)}
                 className="accent-[var(--accent)]"
               />
-              <span
-                className="w-2 h-2 rounded-full inline-block"
-                style={{ background: MARKETPLACE_COLORS[mp.name] || "#6366f1" }}
-              />
+              {getMpFavicon(mp.name) ? (
+                <img src={getMpFavicon(mp.name)!} alt={mp.name} className="w-4 h-4" />
+              ) : (
+                <span
+                  className="w-2 h-2 rounded-full inline-block"
+                  style={{ background: MARKETPLACE_COLORS[mp.name] || "#6366f1" }}
+                />
+              )}
               <span className="text-[var(--text-primary)] capitalize">{mp.name}</span>
               <span className="text-[var(--text-muted)] ml-auto">({mp.count})</span>
             </label>

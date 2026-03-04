@@ -1,15 +1,5 @@
 import type { ProductOut, PriceHistoryEntry } from "@/lib/types";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
+import { getMpColor, getMpFavicon } from "@/lib/marketplaces";
 
 interface ComparisonTableProps {
   products: ProductOut[];
@@ -56,7 +46,8 @@ export default function ComparisonTable({ products, priceHistories }: Comparison
                 history.length > 0
                   ? Math.min(...history.map((h) => Number(h.price)))
                   : price;
-              const mpColor = MARKETPLACE_COLORS[p.marketplace || ""] || "#6366f1";
+              const mpColor = getMpColor(p.marketplace);
+              const favicon = getMpFavicon(p.marketplace);
 
               return (
                 <tr
@@ -64,10 +55,14 @@ export default function ComparisonTable({ products, priceHistories }: Comparison
                   className={`border-b border-[var(--border-color)]/50 ${isBest ? "bg-[var(--price-color)]/5" : ""}`}
                 >
                   <td className="px-6 py-4 text-sm">
-                    <span
-                      className="inline-block w-2 h-2 rounded-full mr-2"
-                      style={{ background: mpColor }}
-                    />
+                    {favicon ? (
+                      <img src={favicon} alt={p.marketplace || ""} className="w-4 h-4 inline-block mr-2 align-middle" />
+                    ) : (
+                      <span
+                        className="inline-block w-2 h-2 rounded-full mr-2"
+                        style={{ background: mpColor }}
+                      />
+                    )}
                     <span className="capitalize">{p.marketplace || "—"}</span>
                   </td>
                   <td className={`px-6 py-4 text-sm ${isBest ? "text-[var(--price-color)] font-bold" : ""}`}>
