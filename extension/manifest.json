@@ -29,6 +29,11 @@
       "js": ["src/content/extractor.js", "src/content/ui.js"],
       "css": ["src/content/wardrop.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://localhost:3000/*"],
+      "js": ["src/content/token-sync.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {

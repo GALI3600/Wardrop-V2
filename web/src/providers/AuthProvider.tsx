@@ -24,6 +24,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<UserOut | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Validate token on mount
   useEffect(() => {
     const token = localStorage.getItem("wardrop-token");
     if (!token) {
@@ -38,6 +39,22 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       })
       .finally(() => setIsLoading(false));
   }, []);
+
+  // React to token changes from extension sync or other tabs
+  useEffect(() => {
+    function handleStorage(e: StorageEvent | Event) {
+      const token = localStorage.getItem("wardrop-token");
+      if (token && !user) {
+        api.getMe().then(setUser).catch(() => {
+          localStorage.removeItem("wardrop-token");
+        });
+      } else if (!token && user) {
+        setUser(null);
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
     await api.login(email, password);
