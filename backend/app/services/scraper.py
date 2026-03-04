@@ -79,10 +79,10 @@ async def scrape_product(db: Session, product: Product):
         check_price_drop(db, product, new_price)
 
         # Update product
-        product.name = parsed.name
+        product.name = parsed.name or product.name
         product.current_price = new_price
-        product.seller = parsed.seller
-        product.image_url = parsed.image_url
+        product.seller = parsed.seller or product.seller
+        product.image_url = parsed.image_url or product.image_url
         product.ean = parsed.ean or product.ean
         product.last_scraped_at = datetime.utcnow()
 
