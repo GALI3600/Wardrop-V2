@@ -70,6 +70,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const logout = useCallback(() => {
     localStorage.removeItem("wardrop-token");
+    // Notify extension content script on the same tab (storage event only fires cross-tab)
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "wardrop-token", newValue: null })
+    );
     setUser(null);
   }, []);
 

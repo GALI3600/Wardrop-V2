@@ -1,23 +1,10 @@
 import Link from "next/link";
 import type { ProductListItem } from "@/lib/types";
+import { getMpColor } from "@/lib/marketplaces";
 import SparklineChart from "./SparklineChart";
 import TrendIndicator from "./TrendIndicator";
 import BestPriceBadge from "./BestPriceBadge";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
-
-function getMpColor(mp: string | null) {
-  return MARKETPLACE_COLORS[mp || ""] || "#6366f1";
-}
+import MarketplaceBadge from "./MarketplaceBadge";
 
 interface ProductCardProps {
   product: ProductListItem;
@@ -44,25 +31,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="p-4 flex flex-col flex-1 gap-2">
           <div className="flex items-center gap-1.5 flex-wrap">
             {isGrouped ? (
-              product.marketplace_prices.map((mp) => {
-                const color = getMpColor(mp.marketplace);
-                return (
-                  <span
-                    key={mp.product_id}
-                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                    style={{ background: color + "20", color }}
-                  >
-                    {mp.marketplace || "—"}
-                  </span>
-                );
-              })
+              product.marketplace_prices.map((mp) => (
+                <MarketplaceBadge key={mp.product_id} marketplace={mp.marketplace} />
+              ))
             ) : (
-              <span
-                className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                style={{ background: primaryColor + "20", color: primaryColor }}
-              >
-                {product.marketplace || "—"}
-              </span>
+              <MarketplaceBadge marketplace={product.marketplace} />
             )}
             <BestPriceBadge isAtLowest={product.is_at_lowest} />
           </div>

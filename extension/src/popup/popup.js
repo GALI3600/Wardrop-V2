@@ -33,6 +33,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   await updateAuthUI();
   await loadTrackedProducts();
 
+  // React to token changes from web sync or other sources
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.token) {
+      updateAuthUI();
+      loadTrackedProducts();
+    }
+  });
+
   document.getElementById("open-dashboard").addEventListener("click", () => {
     chrome.tabs.create({
       url: "http://localhost:3000/meus-produtos",

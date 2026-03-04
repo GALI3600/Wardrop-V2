@@ -35,5 +35,9 @@
     } else {
       localStorage.removeItem(WEB_KEY);
     }
+    // Notify same-tab listeners (storage event only fires cross-tab)
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: WEB_KEY, newValue: newToken || null })
+    );
   });
 })();

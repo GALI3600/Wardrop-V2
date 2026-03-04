@@ -2,21 +2,7 @@
 
 import Link from "next/link";
 import { X } from "lucide-react";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
-
-function getMpColor(mp: string | null) {
-  return MARKETPLACE_COLORS[mp || ""] || "#6366f1";
-}
+import MarketplaceBadge from "./MarketplaceBadge";
 
 interface TrackedProductCardProps {
   id: string;
@@ -42,7 +28,6 @@ export default function TrackedProductCard({
   onUntrack,
 }: TrackedProductCardProps) {
   const isGrouped = marketplaces && marketplaces.length > 1;
-  const primaryColor = getMpColor(marketplace);
 
   function handleUntrack(e: React.MouseEvent) {
     e.preventDefault();
@@ -90,25 +75,11 @@ export default function TrackedProductCard({
         <div className="p-4 flex flex-col flex-1 gap-2">
           <div className="flex items-center gap-1.5 flex-wrap">
             {isGrouped ? (
-              marketplaces.map((mp) => {
-                const color = getMpColor(mp);
-                return (
-                  <span
-                    key={mp}
-                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                    style={{ background: color + "20", color }}
-                  >
-                    {mp}
-                  </span>
-                );
-              })
+              marketplaces.map((mp) => (
+                <MarketplaceBadge key={mp} marketplace={mp} />
+              ))
             ) : (
-              <span
-                className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                style={{ background: primaryColor + "20", color: primaryColor }}
-              >
-                {marketplace || "—"}
-              </span>
+              <MarketplaceBadge marketplace={marketplace} />
             )}
           </div>
 

@@ -45,6 +45,9 @@ export async function login(email: string, password: string): Promise<AuthToken>
     body: JSON.stringify({ email, password }),
   });
   localStorage.setItem("wardrop-token", data.access_token);
+  window.dispatchEvent(
+    new StorageEvent("storage", { key: "wardrop-token", newValue: data.access_token })
+  );
   return data;
 }
 
@@ -54,6 +57,9 @@ export async function register(email: string, password: string): Promise<AuthTok
     body: JSON.stringify({ email, password }),
   });
   localStorage.setItem("wardrop-token", data.access_token);
+  window.dispatchEvent(
+    new StorageEvent("storage", { key: "wardrop-token", newValue: data.access_token })
+  );
   return data;
 }
 
