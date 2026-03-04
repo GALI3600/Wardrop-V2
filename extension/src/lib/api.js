@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "https://wardrop.api.serverapp.com.br/api";
 
 async function apiRequest(path, options = {}) {
   const url = `${API_BASE}${path}`;

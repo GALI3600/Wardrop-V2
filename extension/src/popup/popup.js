@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("open-dashboard").addEventListener("click", () => {
     chrome.tabs.create({
-      url: "http://localhost:3000/meus-produtos",
+      url: "https://wardrop.serverapp.com.br/meus-produtos",
     });
   });
 
