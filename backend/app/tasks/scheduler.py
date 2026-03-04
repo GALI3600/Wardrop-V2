@@ -51,6 +51,7 @@ def start_scheduler():
         id="scrape_tracked_products",
         replace_existing=True,
         max_instances=1,
+        misfire_grace_time=600,
     )
     scheduler.add_job(
         run_untracked_scrape_job,
@@ -59,6 +60,7 @@ def start_scheduler():
         id="scrape_untracked_products",
         replace_existing=True,
         max_instances=1,
+        misfire_grace_time=3600,
     )
     scheduler.start()
     logger.info("Scheduler started — tracked: every 1h, untracked: every 24h")
