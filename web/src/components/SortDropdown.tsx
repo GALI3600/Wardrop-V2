@@ -25,7 +25,7 @@ export default function SortDropdown({ sortBy, sortOrder, onChange }: SortDropdo
         const [sb, so] = e.target.value.split(":");
         onChange(sb, so);
       }}
-      className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
     >
       {OPTIONS.map((opt) => (
         <option key={`${opt.sortBy}:${opt.sortOrder}`} value={`${opt.sortBy}:${opt.sortOrder}`}>

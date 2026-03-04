@@ -1,26 +1,17 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getProductHistory, getGroupComparison } from "@/lib/api";
 import { SinglePriceChart, ComparisonPriceChart } from "@/components/PriceChart";
 import ComparisonTable from "@/components/ComparisonTable";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
+import MarketplaceBadge from "@/components/MarketplaceBadge";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = params.id as string;
 
   const { data, isLoading } = useQuery({
@@ -36,28 +27,26 @@ export default function ProductDetailPage() {
   });
 
   if (isLoading) {
-    return <div className="text-center py-20 text-slate-500">Carregando...</div>;
+    return <div className="text-center py-20 text-[var(--text-muted)]">Carregando...</div>;
   }
 
   if (!data) {
-    return <div className="text-center py-20 text-slate-500">Produto não encontrado.</div>;
+    return <div className="text-center py-20 text-[var(--text-muted)]">Produto não encontrado.</div>;
   }
 
   const { product, history } = data;
-  const mpColor = MARKETPLACE_COLORS[product.marketplace || ""] || "#6366f1";
-
   return (
     <div>
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm mb-6 transition"
+      <button
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-1 text-[var(--accent)] hover:opacity-80 text-sm mb-6 transition"
       >
         <ArrowLeft className="w-4 h-4" />
         Voltar
-      </Link>
+      </button>
 
       {/* Product info */}
-      <div className="bg-slate-800 rounded-xl p-6 flex flex-col md:flex-row gap-6">
+      <div className="bg-[var(--bg-card)] rounded-xl p-6 flex flex-col md:flex-row gap-6" style={{ boxShadow: "var(--shadow)" }}>
         {product.image_url && (
           <div className="bg-white rounded-lg p-4 flex items-center justify-center w-full md:w-64 h-64 shrink-0">
             <img
@@ -68,20 +57,15 @@ export default function ProductDetailPage() {
           </div>
         )}
         <div className="flex flex-col gap-3 flex-1">
-          <span
-            className="text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded w-fit"
-            style={{ background: mpColor + "20", color: mpColor }}
-          >
-            {product.marketplace || "—"}
-          </span>
-          <h1 className="text-xl font-bold text-slate-100">
+          <MarketplaceBadge marketplace={product.marketplace} />
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">
             {product.name || "Produto"}
           </h1>
-          <p className="text-3xl font-bold text-emerald-400">
+          <p className="text-3xl font-bold text-[var(--price-color)]">
             {product.currency} {Number(product.current_price || 0).toFixed(2)}
           </p>
           {product.seller && (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-secondary)]">
               Vendedor: {product.seller}
             </p>
           )}
@@ -89,7 +73,7 @@ export default function ProductDetailPage() {
             href={product.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm text-indigo-400 hover:text-indigo-300 mt-2 w-fit transition"
+            className="inline-flex items-center gap-1 text-sm text-[var(--accent)] hover:opacity-80 mt-2 w-fit transition"
           >
             <ExternalLink className="w-4 h-4" />
             Ver no marketplace
@@ -108,16 +92,9 @@ export default function ProductDetailPage() {
         </>
       )}
 
-      {/* Single price chart (if not grouped) */}
+      {/* Single price chart (only if not grouped) */}
       {!groupId && history.length > 0 && (
         <SinglePriceChart history={history} />
-      )}
-
-      {/* If grouped, also show the single product history below */}
-      {groupId && history.length > 0 && (
-        <div className="mt-4">
-          <SinglePriceChart history={history} />
-        </div>
       )}
     </div>
   );

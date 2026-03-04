@@ -17,7 +17,7 @@ You are a product data extractor. Given the HTML content of a product page from 
 
 Required fields:
 - name: Product name/title
-- price: Current price as a number (no currency symbol)
+- price: The lowest available price as a number (no currency symbol). If the page shows multiple prices (e.g., Pix/à vista discount vs. installment/credit card price), always use the lowest price — typically the Pix or "à vista" price.
 - currency: Currency code (e.g., "BRL", "USD")
 
 Optional fields (include if found):

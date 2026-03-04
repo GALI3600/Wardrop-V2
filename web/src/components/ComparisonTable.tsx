@@ -1,15 +1,5 @@
 import type { ProductOut, PriceHistoryEntry } from "@/lib/types";
-
-const MARKETPLACE_COLORS: Record<string, string> = {
-  amazon: "#ff9900",
-  mercadolivre: "#ffe600",
-  magalu: "#0086ff",
-  shopee: "#ee4d2d",
-  casasbahia: "#0060a8",
-  americanas: "#e60014",
-  kabum: "#ff6500",
-  aliexpress: "#e43225",
-};
+import { getMpColor, getMpFavicon } from "@/lib/marketplaces";
 
 interface ComparisonTableProps {
   products: ProductOut[];
@@ -22,27 +12,27 @@ export default function ComparisonTable({ products, priceHistories }: Comparison
   );
 
   return (
-    <div className="bg-slate-800 rounded-xl overflow-hidden mt-4">
-      <h3 className="text-sm font-semibold text-slate-400 px-6 pt-5 pb-3">
+    <div className="bg-[var(--bg-card)] rounded-xl overflow-hidden mt-4" style={{ boxShadow: "var(--shadow)" }}>
+      <h3 className="text-sm font-semibold text-[var(--text-secondary)] px-6 pt-5 pb-3">
         Preços em outros Marketplaces
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <tr className="border-b border-[var(--border-color)]">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Marketplace
               </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Preço Atual
               </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Menor Preço
               </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Vendedor
               </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Link
               </th>
             </tr>
@@ -56,31 +46,36 @@ export default function ComparisonTable({ products, priceHistories }: Comparison
                 history.length > 0
                   ? Math.min(...history.map((h) => Number(h.price)))
                   : price;
-              const mpColor = MARKETPLACE_COLORS[p.marketplace || ""] || "#6366f1";
+              const mpColor = getMpColor(p.marketplace);
+              const favicon = getMpFavicon(p.marketplace);
 
               return (
                 <tr
                   key={p.id}
-                  className={`border-b border-slate-700/50 ${isBest ? "bg-emerald-500/5" : ""}`}
+                  className={`border-b border-[var(--border-color)]/50 ${isBest ? "bg-[var(--price-color)]/5" : ""}`}
                 >
                   <td className="px-6 py-4 text-sm">
-                    <span
-                      className="inline-block w-2 h-2 rounded-full mr-2"
-                      style={{ background: mpColor }}
-                    />
+                    {favicon ? (
+                      <img src={favicon} alt={p.marketplace || ""} className="w-4 h-4 inline-block mr-2 align-middle" />
+                    ) : (
+                      <span
+                        className="inline-block w-2 h-2 rounded-full mr-2"
+                        style={{ background: mpColor }}
+                      />
+                    )}
                     <span className="capitalize">{p.marketplace || "—"}</span>
                   </td>
-                  <td className={`px-6 py-4 text-sm ${isBest ? "text-emerald-400 font-bold" : ""}`}>
+                  <td className={`px-6 py-4 text-sm ${isBest ? "text-[var(--price-color)] font-bold" : ""}`}>
                     R$ {price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 text-sm">R$ {lowestEver.toFixed(2)}</td>
-                  <td className="px-6 py-4 text-sm text-slate-400">{p.seller || "—"}</td>
+                  <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">{p.seller || "—"}</td>
                   <td className="px-6 py-4 text-sm">
                     <a
                       href={p.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-400 hover:text-indigo-300 hover:underline"
+                      className="text-[var(--accent)] hover:opacity-80 hover:underline"
                     >
                       Visitar
                     </a>

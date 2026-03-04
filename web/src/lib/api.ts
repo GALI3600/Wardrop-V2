@@ -1,9 +1,12 @@
 import type {
+  AuthToken,
   FilterOptionsResponse,
   GroupComparisonOut,
   ListParams,
   ProductHistoryOut,
   ProductListResponse,
+  ProductOut,
+  UserOut,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
@@ -12,6 +15,75 @@ async function fetchApi<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
+}
+
+async function fetchAuthApi<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const token = localStorage.getItem("wardrop-token");
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.detail || `API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+// Auth
+
+export async function login(email: string, password: string): Promise<AuthToken> {
+  const data = await fetchAuthApi<AuthToken>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+  localStorage.setItem("wardrop-token", data.access_token);
+  window.dispatchEvent(
+    new StorageEvent("storage", { key: "wardrop-token", newValue: data.access_token })
+  );
+  return data;
+}
+
+export async function register(email: string, password: string): Promise<AuthToken> {
+  const data = await fetchAuthApi<AuthToken>("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+  localStorage.setItem("wardrop-token", data.access_token);
+  window.dispatchEvent(
+    new StorageEvent("storage", { key: "wardrop-token", newValue: data.access_token })
+  );
+  return data;
+}
+
+export function getMe(): Promise<UserOut> {
+  return fetchAuthApi<UserOut>("/auth/me");
+}
+
+// Tracking
+
+export function getTrackedProducts(): Promise<ProductOut[]> {
+  return fetchAuthApi<ProductOut[]>("/tracking/products");
+}
+
+export function trackProduct(productId: string): Promise<{ status: string }> {
+  return fetchAuthApi("/tracking/track", {
+    method: "POST",
+    body: JSON.stringify({ product_id: productId }),
+  });
+}
+
+export function untrackProduct(productId: string): Promise<{ status: string }> {
+  return fetchAuthApi(`/tracking/untrack/${productId}`, {
+    method: "DELETE",
+  });
 }
 
 export function getProducts(params: ListParams = {}): Promise<ProductListResponse> {

@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* Light mode (default) */
 :root {
   --bg-body: #f8fafc;
@@ -25,44 +23,47 @@
   --chart-tooltip-text: #0f172a;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --sparkline-stroke: #6366f1;
-  --sparkline-fill: rgba(99, 102, 241, 0.1);
   --scrollbar-track: #f1f5f9;
   --scrollbar-thumb: #cbd5e1;
+  --error-color: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.1);
+  --success-color: #16a34a;
+  --input-bg: #f1f5f9;
+  --input-border: #e2e8f0;
+  --input-text: #0f172a;
 }
 
 /* Dark mode */
 .dark {
-  --bg-body: #0f172a;
-  --bg-card: #1e293b;
-  --bg-input: #334155;
-  --bg-hover: #475569;
+  --bg-body: #0f0f23;
+  --bg-card: #1a1a2e;
+  --bg-input: #2a2a4a;
+  --bg-hover: #3a3a5a;
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --border-color: #334155;
+  --border-color: #2a2a4a;
   --accent: #818cf8;
   --accent-hover: #6366f1;
   --accent-muted: rgba(99, 102, 241, 0.2);
   --price-color: #4ade80;
   --price-up: #f87171;
   --price-down: #4ade80;
-  --badge-bg: #334155;
+  --badge-bg: #2a2a4a;
   --badge-text: #94a3b8;
-  --chart-grid: #334155;
+  --chart-grid: #2a2a4a;
   --chart-text: #94a3b8;
-  --chart-tooltip-bg: #1e293b;
-  --chart-tooltip-border: #334155;
+  --chart-tooltip-bg: #1a1a2e;
+  --chart-tooltip-border: #2a2a4a;
   --chart-tooltip-text: #e2e8f0;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --sparkline-stroke: #818cf8;
-  --sparkline-fill: rgba(129, 140, 248, 0.2);
-  --scrollbar-track: #1e293b;
-  --scrollbar-thumb: #475569;
-}
-
-body {
-  background: var(--bg-body);
-  color: var(--text-primary);
+  --scrollbar-track: #1a1a2e;
+  --scrollbar-thumb: #3a3a5a;
+  --error-color: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.1);
+  --success-color: #4ade80;
+  --input-bg: #2a2a4a;
+  --input-border: #3a3a5a;
+  --input-text: #e2e8f0;
 }
