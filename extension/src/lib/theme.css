@@ -35,35 +35,35 @@
 
 /* Dark mode */
 .dark {
-  --bg-body: #0f0f23;
-  --bg-card: #1a1a2e;
-  --bg-input: #2a2a4a;
-  --bg-hover: #3a3a5a;
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #334155;
+  --bg-hover: #475569;
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --border-color: #2a2a4a;
+  --border-color: #334155;
   --accent: #818cf8;
   --accent-hover: #6366f1;
   --accent-muted: rgba(99, 102, 241, 0.2);
   --price-color: #4ade80;
   --price-up: #f87171;
   --price-down: #4ade80;
-  --badge-bg: #2a2a4a;
+  --badge-bg: #334155;
   --badge-text: #94a3b8;
-  --chart-grid: #2a2a4a;
+  --chart-grid: #334155;
   --chart-text: #94a3b8;
-  --chart-tooltip-bg: #1a1a2e;
-  --chart-tooltip-border: #2a2a4a;
+  --chart-tooltip-bg: #1e293b;
+  --chart-tooltip-border: #334155;
   --chart-tooltip-text: #e2e8f0;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --scrollbar-track: #1a1a2e;
-  --scrollbar-thumb: #3a3a5a;
+  --scrollbar-track: #1e293b;
+  --scrollbar-thumb: #475569;
   --error-color: #f87171;
   --error-bg: rgba(248, 113, 113, 0.1);
   --success-color: #4ade80;
-  --input-bg: #2a2a4a;
-  --input-border: #3a3a5a;
+  --input-bg: #334155;
+  --input-border: #475569;
   --input-text: #e2e8f0;
 }

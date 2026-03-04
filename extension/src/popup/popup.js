@@ -293,35 +293,39 @@ async function loadTrackedProducts() {
       const chartDiv = `<div class="product-card-chart" id="chart-area-${idx}"><canvas id="popup-chart-${idx}"></canvas></div>`;
 
       if (item.type === "group") {
-        const badges = item.marketplaces
-          .map((mp) => `<span class="popup-mp-badge">${escapeHtml(mp)}</span>`)
+        const faviconIcons = item.marketplaces
+          .map((mp) => {
+            const url = getMpFaviconUrl(mp);
+            return url ? `<img class="product-mp-icon" src="${url}" alt="${escapeHtml(mp)}">` : "";
+          })
+          .filter(Boolean)
           .join("");
         const priceText =
           item.min_price !== item.max_price
-            ? `${item.currency} ${item.min_price.toFixed(2)} — ${item.max_price.toFixed(2)}`
-            : `${item.currency} ${item.min_price.toFixed(2)}`;
+            ? `R$ ${item.min_price.toFixed(2)} — ${item.max_price.toFixed(2)}`
+            : `R$ ${item.min_price.toFixed(2)}`;
         return `
           <div class="product-card" data-product-id="${pid}" data-group-id="${gid}" data-idx="${idx}">
             <div class="product-card-row">
               ${item.image_url ? `<img class="product-thumb" src="${escapeHtml(item.image_url)}" alt="">` : ""}
               <div class="product-card-info">
-                <div class="popup-mp-badges">${badges}</div>
                 <div class="product-name" title="${escapeHtml(item.name || "")}">${escapeHtml(item.name || "Produto")}</div>
-                <div class="product-price">${priceText}</div>
+                <div class="product-price">${faviconIcons}${priceText}</div>
               </div>
             </div>
             ${chartDiv}
           </div>
         `;
       } else {
+        const faviconUrl = getMpFaviconUrl(item.marketplace);
+        const faviconImg = faviconUrl ? `<img class="product-mp-icon" src="${faviconUrl}" alt="${escapeHtml(item.marketplace || "")}">` : "";
         return `
           <div class="product-card" data-product-id="${pid}" data-idx="${idx}">
             <div class="product-card-row">
               ${item.image_url ? `<img class="product-thumb" src="${escapeHtml(item.image_url)}" alt="">` : ""}
               <div class="product-card-info">
-                <div class="product-marketplace">${escapeHtml(item.marketplace || "—")}</div>
                 <div class="product-name" title="${escapeHtml(item.name || "")}">${escapeHtml(item.name || "Produto")}</div>
-                <div class="product-price">${escapeHtml(item.currency || "BRL")} ${escapeHtml(String(item.current_price || "—"))}</div>
+                <div class="product-price">${faviconImg}R$ ${escapeHtml(String(item.current_price || "—"))}</div>
               </div>
             </div>
             ${chartDiv}
@@ -389,6 +393,23 @@ async function togglePopupChart(card) {
     console.error("[Wardrop] Failed to load chart:", err);
     chartArea.innerHTML = `<p class="chart-loading">Erro ao carregar gráfico.</p>`;
   }
+}
+
+const POPUP_MARKETPLACE_DOMAINS = {
+  amazon: "amazon.com.br",
+  mercadolivre: "mercadolivre.com.br",
+  magalu: "magazineluiza.com.br",
+  shopee: "shopee.com.br",
+  casasbahia: "casasbahia.com.br",
+  americanas: "americanas.com.br",
+  kabum: "kabum.com.br",
+  aliexpress: "aliexpress.com",
+};
+
+function getMpFaviconUrl(mp) {
+  const domain = POPUP_MARKETPLACE_DOMAINS[mp];
+  if (!domain) return null;
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
 }
 
 const POPUP_MARKETPLACE_COLORS = {

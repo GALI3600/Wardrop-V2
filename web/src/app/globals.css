@@ -66,3 +66,17 @@ body {
   background: var(--bg-body);
   color: var(--text-primary);
 }
+
+@keyframes float-down {
+  0% {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
