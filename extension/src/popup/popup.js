@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("open-dashboard").addEventListener("click", () => {
     chrome.tabs.create({
-      url: chrome.runtime.getURL("src/dashboard/dashboard.html"),
+      url: "http://localhost:3000/meus-produtos",
     });
   });
 

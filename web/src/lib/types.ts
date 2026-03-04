@@ -90,6 +90,18 @@ export interface GroupComparisonOut {
   price_histories: Record<string, PriceHistoryEntry[]>;
 }
 
+export interface AuthToken {
+  access_token: string;
+  token_type: string;
+}
+
+export interface UserOut {
+  id: string;
+  email: string;
+  notify_email: boolean;
+  notify_push: boolean;
+}
+
 export interface ListParams {
   search?: string;
   marketplace?: string;

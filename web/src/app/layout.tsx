@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
 import Header from "@/components/Header";
 
@@ -28,10 +29,12 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-[var(--bg-body)] text-[var(--text-primary)] min-h-screen`}>
         <QueryProvider>
-          <ThemeProvider>
-            <Header />
-            <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Header />
+              <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
+            </ThemeProvider>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>
