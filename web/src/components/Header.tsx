@@ -16,8 +16,8 @@ export default function Header() {
           Wardrop
         </Link>
         <nav className="flex items-center gap-4">
-          <Link href="/" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
-            Produtos
+          <Link href="/produtos" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+            Todos os Produtos
           </Link>
 
           {!isLoading && user && (

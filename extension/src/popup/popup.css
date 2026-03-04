@@ -7,32 +7,55 @@
 body {
   width: 360px;
   min-height: 400px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg-body);
   color: var(--text-primary);
 }
 
 .popup {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ── Header ── */
 .popup-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.popup-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.popup-header-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .popup-header h1 {
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text-primary);
 }
 
 .popup-subtitle {
-  font-size: 12px;
+  font-size: 10px;
   color: var(--text-muted);
 }
 
@@ -40,11 +63,11 @@ body {
   margin-left: auto;
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
-  padding: 8px;
+  padding: 4px;
   line-height: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: color 0.2s, background 0.2s;
   display: flex;
   align-items: center;
@@ -56,12 +79,13 @@ body {
   background: var(--bg-input);
 }
 
+/* ── Sections ── */
 .section {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .section h2 {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 8px;
@@ -73,15 +97,17 @@ body {
 .badge {
   background: var(--accent);
   color: #fff;
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
   border-radius: 10px;
 }
 
+/* ── Product cards ── */
 .product-card {
-  background: var(--bg-card);
+  background: var(--bg-input);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -120,12 +146,12 @@ body {
 }
 
 .product-card .product-thumb {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   background: #fff;
   border-radius: 6px;
-  padding: 4px;
+  padding: 2px;
   flex-shrink: 0;
 }
 
@@ -135,31 +161,44 @@ body {
 }
 
 .product-card .product-name {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .product-card .product-price {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--price-color);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-card .product-mp-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 .product-card .product-marketplace {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-bottom: 1px;
 }
 
+/* ── Marketplace badges ── */
 .popup-mp-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 2px;
+  gap: 3px;
+  margin-bottom: 3px;
 }
 
 .popup-mp-badge {
@@ -170,13 +209,14 @@ body {
   color: var(--badge-text);
   background: var(--badge-bg);
   padding: 1px 5px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
+/* ── Products list ── */
 .products-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   max-height: 300px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -184,7 +224,7 @@ body {
 }
 
 .products-list::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .products-list::-webkit-scrollbar-track {
@@ -193,7 +233,7 @@ body {
 
 .products-list::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .products-list::-webkit-scrollbar-thumb:hover {
@@ -204,24 +244,25 @@ body {
   font-size: 13px;
   color: var(--text-muted);
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
+/* ── Footer ── */
 .popup-footer {
   display: flex;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid var(--border-color);
+  margin-top: 4px;
 }
 
 .btn-primary,
 .btn-secondary {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   border: none;
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -236,27 +277,30 @@ body {
 }
 
 .btn-secondary {
-  background: var(--bg-card);
+  background: var(--bg-input);
   color: var(--text-primary);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-input);
+  background: var(--bg-hover);
 }
 
-/* Auth section */
+/* ── Auth section ── */
 .auth-tabs {
   display: flex;
-  gap: 4px;
+  gap: 0;
   margin-bottom: 12px;
+  background: var(--bg-input);
+  padding: 3px;
+  border-radius: 8px;
 }
 
 .auth-tab {
   flex: 1;
-  padding: 8px;
+  padding: 7px;
   border: none;
   border-radius: 6px;
-  background: var(--bg-card);
+  background: transparent;
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
@@ -271,7 +315,7 @@ body {
 
 .auth-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 12px;
   margin-bottom: 8px;
   border: 1px solid var(--input-border);
   border-radius: 8px;
@@ -279,11 +323,12 @@ body {
   color: var(--input-text);
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .auth-input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-muted);
 }
 
 .auth-input::placeholder {
@@ -300,36 +345,35 @@ body {
   color: var(--error-color);
   font-size: 12px;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 8px;
 }
 
-/* User info */
+/* ── User info ── */
 .user-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--bg-card);
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .user-email {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 200px;
+  max-width: 220px;
 }
 
 .btn-link {
   background: none;
   border: none;
   color: var(--accent);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
-  padding: 4px;
+  padding: 0;
 }
 
 .btn-link:hover {
