@@ -52,10 +52,12 @@ export default function TrackedProductCard({
 
   const priceDisplay = (() => {
     if (minPrice == null) return `${currency} —`;
-    if (isGrouped && maxPrice != null && maxPrice !== minPrice) {
-      return `${currency} ${minPrice.toFixed(2)} — ${maxPrice.toFixed(2)}`;
+    const min = Number(minPrice);
+    const max = Number(maxPrice);
+    if (isGrouped && maxPrice != null && max !== min) {
+      return `${currency} ${min.toFixed(2)} — ${max.toFixed(2)}`;
     }
-    return `${currency} ${minPrice.toFixed(2)}`;
+    return `${currency} ${min.toFixed(2)}`;
   })();
 
   return (

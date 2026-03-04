@@ -85,10 +85,10 @@ export default function MeusProdutosPage() {
           : trackedProducts.filter((p) => p.group_id === product.group_id);
 
         const prices = products
-          .map((p) => p.current_price)
-          .filter((v): v is number => v != null && v > 0);
+          .map((p) => Number(p.current_price))
+          .filter((v) => v > 0);
         const sorted = [...products].sort(
-          (a, b) => (a.current_price ?? Infinity) - (b.current_price ?? Infinity),
+          (a, b) => (Number(a.current_price) || Infinity) - (Number(b.current_price) || Infinity),
         );
         const cheapest = sorted[0];
 
