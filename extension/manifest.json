@@ -9,7 +9,7 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://wardrop.api.serverapp.com.br/*"
+    "https://wardrop-api.serverapp.com.br/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js"

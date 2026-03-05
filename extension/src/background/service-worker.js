@@ -1,4 +1,4 @@
-const API_BASE = "https://wardrop.api.serverapp.com.br/api";
+const API_BASE = "https://wardrop-api.serverapp.com.br/api";
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
