@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,6 +9,7 @@ from sqlalchemy.orm import Session
 logger = logging.getLogger(__name__)
 
 from app.db.database import get_db
+from app.utils import now_brasilia
 from app.models.price_history import PriceHistory
 from app.models.product import Product, ProductGroup
 from app.schemas.product import (
@@ -52,7 +52,7 @@ async def parse_product(req: ParseRequest, db: Session = Depends(get_db)):
         select(Product).where(Product.url == canonical_url)
     ).scalar_one_or_none()
 
-    now = datetime.utcnow()
+    now = now_brasilia()
 
     if existing:
         logger.info("Updating existing product %s (%s)", existing.id, req.url)

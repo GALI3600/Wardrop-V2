@@ -5,7 +5,6 @@ to avoid repeated API calls for the same marketplace URL patterns.
 
 import logging
 import re
-from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from urllib.parse import urlparse
 
@@ -15,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.models.price_history import SelectorCache
 from app.schemas.product import ParsedProduct
+from app.utils import now_brasilia
 
 logger = logging.getLogger(__name__)
 
@@ -136,14 +136,14 @@ def save_selectors(db: Session, url: str, selectors: dict) -> None:
 
     if existing:
         existing.selectors = selectors
-        existing.last_validated_at = datetime.utcnow()
+        existing.last_validated_at = now_brasilia()
     else:
         entry = SelectorCache(
             url_pattern=pattern,
             selectors=selectors,
             success_count=0,
             fail_count=0,
-            last_validated_at=datetime.utcnow(),
+            last_validated_at=now_brasilia(),
         )
         db.add(entry)
 
@@ -160,4 +160,4 @@ def record_cache_result(db: Session, url: str, success: bool) -> None:
             entry.success_count += 1
         else:
             entry.fail_count += 1
-        entry.last_validated_at = datetime.utcnow()
+        entry.last_validated_at = now_brasilia()

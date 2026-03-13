@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+from app.utils import now_brasilia
 
 
 class PriceHistory(Base):
@@ -27,7 +28,7 @@ class PriceHistory(Base):
     seller: Mapped[str | None] = mapped_column(String(255), nullable=True)
     available: Mapped[bool] = mapped_column(Boolean, default=True)
     scraped_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )
 
     product = relationship("Product", back_populates="price_history")
@@ -55,7 +56,7 @@ class UserProduct(Base):
     )
     notify_on_any_drop: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )
 
     user = relationship("User", back_populates="tracked_products")
@@ -71,5 +72,5 @@ class SelectorCache(Base):
     success_count: Mapped[int] = mapped_column(default=0)
     fail_count: Mapped[int] = mapped_column(default=0)
     last_validated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )

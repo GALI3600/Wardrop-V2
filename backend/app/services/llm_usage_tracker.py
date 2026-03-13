@@ -3,13 +3,14 @@ LLM usage tracking: records token consumption and estimated cost per API call.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.llm_usage import LLMUsage
+from app.utils import now_brasilia
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ def track_llm_usage(
 
 def get_usage_summary(db: Session, days: int = 30) -> dict:
     """Get aggregated usage statistics by day and month."""
-    cutoff = datetime.utcnow() - timedelta(days=days)
+    cutoff = now_brasilia() - timedelta(days=days)
 
     # Daily aggregation
     daily_rows = db.execute(

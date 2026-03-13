@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+from app.utils import now_brasilia
 
 
 class ProductGroup(Base):
@@ -18,7 +19,7 @@ class ProductGroup(Base):
     canonical_name: Mapped[str | None] = mapped_column(String(500), nullable=True)
     ean: Mapped[str | None] = mapped_column(String(50), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )
 
     products = relationship("Product", back_populates="group")
@@ -47,7 +48,7 @@ class Product(Base):
         DateTime, nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )
 
     group = relationship("ProductGroup", back_populates="products")

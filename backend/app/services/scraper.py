@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import datetime
 from decimal import Decimal
 
 import httpx
@@ -13,6 +12,7 @@ from app.models.price_history import PriceHistory, UserProduct
 from app.models.product import Product
 from app.services.llm_parser import parse_product_html
 from app.services.price_analyzer import check_price_drop
+from app.utils import now_brasilia
 from app.services.product_matcher import (
     match_product_by_ean,
     match_product_by_similarity_background,
@@ -24,11 +24,15 @@ from app.services.selector_cache import (
     try_cached_extraction,
 )
 
-USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/131.0.0.0 Safari/537.36"
-)
+REQUEST_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+}
 
 
 async def scrape_product(db: Session, product: Product):
@@ -44,7 +48,7 @@ async def scrape_product(db: Session, product: Product):
         async with httpx.AsyncClient(
             follow_redirects=True,
             timeout=30.0,
-            headers={"User-Agent": USER_AGENT},
+            headers=REQUEST_HEADERS,
         ) as client:
             response = await client.get(product.url)
             response.raise_for_status()
@@ -82,9 +86,11 @@ async def scrape_product(db: Session, product: Product):
         product.name = parsed.name or product.name
         product.current_price = new_price
         product.seller = parsed.seller or product.seller
-        product.image_url = parsed.image_url or product.image_url
+        # Only update image if we found a valid one (don't overwrite with empty/placeholder)
+        if parsed.image_url and parsed.image_url not in (None, "", "Imagem não disponível"):
+            product.image_url = parsed.image_url
         product.ean = parsed.ean or product.ean
-        product.last_scraped_at = datetime.utcnow()
+        product.last_scraped_at = now_brasilia()
 
         # Try EAN matching if not grouped yet
         if not product.group_id:
@@ -101,7 +107,7 @@ async def scrape_product(db: Session, product: Product):
             price=new_price,
             seller=parsed.seller,
             available=parsed.available,
-            scraped_at=datetime.utcnow(),
+            scraped_at=now_brasilia(),
         )
         db.add(history)
         db.commit()

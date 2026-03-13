@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
+from app.utils import now_brasilia
 
 
 class LLMUsage(Base):
@@ -22,5 +23,5 @@ class LLMUsage(Base):
         UUID(as_uuid=True), ForeignKey("products.id"), nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime, default=now_brasilia
     )
