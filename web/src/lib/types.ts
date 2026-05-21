@@ -111,4 +111,5 @@ export interface ListParams {
   sort_order?: string;
   page?: number;
   page_size?: number;
+  timeframe?: string;
 }

@@ -103,6 +103,21 @@ interface SingleChartProps {
 
 export function SinglePriceChart({ history }: SingleChartProps) {
   const ct = useChartTheme();
+
+  if (!history || history.length === 0) {
+    return (
+      <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">Histórico de Preços</h3>
+        <div className="h-72 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-[var(--text-muted)] mb-2">Sem dados para este período</p>
+            <p className="text-xs text-[var(--text-muted)]">Tente selecionar um período maior</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const data = history.map((h) => ({
     date: formatDate(h.scraped_at),
     price: Number(h.price),
@@ -135,7 +150,7 @@ export function SinglePriceChart({ history }: SingleChartProps) {
             />
             <YAxis
               tick={{ fill: ct.tick, fontSize: 11 }}
-              tickFormatter={(v) => `R$${v}`}
+              tickFormatter={(v) => `R$${Number(v).toFixed(2)}`}
               axisLine={false}
               tickLine={false}
               domain={[minPrice - padding, maxPrice + padding]}
@@ -168,6 +183,25 @@ interface MultiChartProps {
 export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
   const ct = useChartTheme();
 
+  // Check if there's any data
+  const hasData = Object.values(priceHistories).some(history => history && history.length > 0);
+
+  if (!hasData) {
+    return (
+      <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
+          Comparativo de Preços
+        </h3>
+        <div className="h-72 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-[var(--text-muted)] mb-2">Sem dados para este período</p>
+            <p className="text-xs text-[var(--text-muted)]">Tente selecionar um período maior</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Collect all dates
   const allDates = new Set<string>();
   for (const history of Object.values(priceHistories)) {
@@ -189,6 +223,17 @@ export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
 
   const marketplaces = Object.keys(priceHistories);
 
+  // Calculate price range for explicit domain
+  const allPrices: number[] = [];
+  for (const history of Object.values(priceHistories)) {
+    for (const h of history) {
+      allPrices.push(Number(h.price));
+    }
+  }
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
+  const padding = (maxPrice - minPrice) * 0.1 || 10;
+
   return (
     <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
       <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
@@ -207,9 +252,10 @@ export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
             />
             <YAxis
               tick={{ fill: ct.tick, fontSize: 11 }}
-              tickFormatter={(v) => `R$${v}`}
+              tickFormatter={(v) => `R$${Number(v).toFixed(2)}`}
               axisLine={false}
               tickLine={false}
+              domain={[minPrice - padding, maxPrice + padding]}
               dx={-4}
             />
             <Tooltip

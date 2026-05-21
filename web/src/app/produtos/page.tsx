@@ -10,6 +10,7 @@ import FilterSidebar from "@/components/FilterSidebar";
 import SortDropdown from "@/components/SortDropdown";
 import ProductGrid from "@/components/ProductGrid";
 import Pagination from "@/components/Pagination";
+import TimeframeSelector from "@/components/TimeframeSelector";
 
 function ProdutosContent() {
   const router = useRouter();
@@ -25,6 +26,7 @@ function ProdutosContent() {
 
   const [minPrice, setMinPrice] = useState(minPriceParam);
   const [maxPrice, setMaxPrice] = useState(maxPriceParam);
+  const [timeframe, setTimeframe] = useState("mes");
 
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
@@ -50,7 +52,7 @@ function ProdutosContent() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", search, marketplace, sortBy, sortOrder, page, minPriceParam, maxPriceParam],
+    queryKey: ["products", search, marketplace, sortBy, sortOrder, page, minPriceParam, maxPriceParam, timeframe],
     queryFn: () =>
       getProducts({
         search: search || undefined,
@@ -61,6 +63,7 @@ function ProdutosContent() {
         sort_order: sortOrder,
         page,
         page_size: 24,
+        timeframe,
       }),
   });
 
@@ -80,7 +83,7 @@ function ProdutosContent() {
       />
 
       <div className="flex-1 min-w-0">
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="flex-1">
             <SearchBar
               value={search}
@@ -92,6 +95,11 @@ function ProdutosContent() {
             sortOrder={sortOrder}
             onChange={(sb, so) => updateParams({ sort_by: sb, sort_order: so })}
           />
+        </div>
+
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-xs text-[var(--text-muted)]">Período:</span>
+          <TimeframeSelector value={timeframe} onChange={setTimeframe} />
         </div>
 
         {filtersData && (

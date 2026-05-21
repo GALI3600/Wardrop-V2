@@ -4,6 +4,7 @@ import type {
   GroupComparisonOut,
   ListParams,
   ProductHistoryOut,
+  ProductListItem,
   ProductListResponse,
   ProductOut,
   UserOut,
@@ -69,8 +70,8 @@ export function getMe(): Promise<UserOut> {
 
 // Tracking
 
-export function getTrackedProducts(): Promise<ProductOut[]> {
-  return fetchAuthApi<ProductOut[]>("/tracking/products");
+export function getTrackedProducts(timeframe: string = "mes"): Promise<ProductListItem[]> {
+  return fetchAuthApi<ProductListItem[]>(`/tracking/products?timeframe=${timeframe}`);
 }
 
 export function trackProduct(productId: string): Promise<{ status: string }> {
@@ -96,6 +97,7 @@ export function getProducts(params: ListParams = {}): Promise<ProductListRespons
   if (params.sort_order) sp.set("sort_order", params.sort_order);
   if (params.page) sp.set("page", String(params.page));
   if (params.page_size) sp.set("page_size", String(params.page_size));
+  if (params.timeframe) sp.set("timeframe", params.timeframe);
   const qs = sp.toString();
   return fetchApi<ProductListResponse>(`/products/list${qs ? `?${qs}` : ""}`);
 }
@@ -104,10 +106,10 @@ export function getFilters(): Promise<FilterOptionsResponse> {
   return fetchApi<FilterOptionsResponse>("/products/filters");
 }
 
-export function getProductHistory(productId: string): Promise<ProductHistoryOut> {
-  return fetchApi<ProductHistoryOut>(`/products/${productId}/history`);
+export function getProductHistory(productId: string, timeframe: string = "mes"): Promise<ProductHistoryOut> {
+  return fetchApi<ProductHistoryOut>(`/products/${productId}/history?timeframe=${timeframe}`);
 }
 
-export function getGroupComparison(groupId: string): Promise<GroupComparisonOut> {
-  return fetchApi<GroupComparisonOut>(`/products/groups/${groupId}/compare`);
+export function getGroupComparison(groupId: string, timeframe: string = "mes"): Promise<GroupComparisonOut> {
+  return fetchApi<GroupComparisonOut>(`/products/groups/${groupId}/compare?timeframe=${timeframe}`);
 }
