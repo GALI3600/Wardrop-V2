@@ -13,6 +13,8 @@ const OPTIONS = [
   { label: "Maior preço", sortBy: "current_price", sortOrder: "desc" },
   { label: "Nome A-Z", sortBy: "name", sortOrder: "asc" },
   { label: "Nome Z-A", sortBy: "name", sortOrder: "desc" },
+  { label: "Maior desconto", sortBy: "price_change_pct", sortOrder: "asc" },
+  { label: "Maior aumento", sortBy: "price_change_pct", sortOrder: "desc" },
 ];
 
 export default function SortDropdown({ sortBy, sortOrder, onChange }: SortDropdownProps) {

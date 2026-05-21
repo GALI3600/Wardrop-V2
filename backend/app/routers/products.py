@@ -199,6 +199,7 @@ def list_products(
         "name": lambda x: (x.name or "").lower(),
         "current_price": lambda x: float(x.current_price or 0),
         "created_at": lambda x: x.created_at,
+        "price_change_pct": lambda x: float(x.price_change_pct or 0),
     }.get(sort_by, lambda x: x.created_at)
     display_items.sort(key=sort_key, reverse=(sort_order == "desc"))
 
