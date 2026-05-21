@@ -135,7 +135,7 @@ export function SinglePriceChart({ history }: SingleChartProps) {
             />
             <YAxis
               tick={{ fill: ct.tick, fontSize: 11 }}
-              tickFormatter={(v) => `R$${v}`}
+              tickFormatter={(v) => `R$${Number(v).toFixed(2)}`}
               axisLine={false}
               tickLine={false}
               domain={[minPrice - padding, maxPrice + padding]}
@@ -189,6 +189,17 @@ export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
 
   const marketplaces = Object.keys(priceHistories);
 
+  // Calculate price range for explicit domain
+  const allPrices: number[] = [];
+  for (const history of Object.values(priceHistories)) {
+    for (const h of history) {
+      allPrices.push(Number(h.price));
+    }
+  }
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
+  const padding = (maxPrice - minPrice) * 0.1 || 10;
+
   return (
     <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
       <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
@@ -207,9 +218,10 @@ export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
             />
             <YAxis
               tick={{ fill: ct.tick, fontSize: 11 }}
-              tickFormatter={(v) => `R$${v}`}
+              tickFormatter={(v) => `R$${Number(v).toFixed(2)}`}
               axisLine={false}
               tickLine={false}
+              domain={[minPrice - padding, maxPrice + padding]}
               dx={-4}
             />
             <Tooltip
