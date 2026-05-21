@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 import { getTrackedProducts, untrackProduct } from "@/lib/api";
 import TrackedProductCard from "@/components/TrackedProductCard";
+import TimeframeSelector from "@/components/TimeframeSelector";
 import type { ProductListItem } from "@/lib/types";
 
 export default function MeusProdutosPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [timeframe, setTimeframe] = useState("mes");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -23,8 +25,8 @@ export default function MeusProdutosPage() {
     data: trackedProducts,
     isLoading: productsLoading,
   } = useQuery<ProductListItem[]>({
-    queryKey: ["tracked-products"],
-    queryFn: getTrackedProducts,
+    queryKey: ["tracked-products", timeframe],
+    queryFn: () => getTrackedProducts(timeframe),
     enabled: !!user,
   });
 
@@ -40,7 +42,10 @@ export default function MeusProdutosPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Meus Produtos</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Meus Produtos</h1>
+        <TimeframeSelector value={timeframe} onChange={setTimeframe} />
+      </div>
 
       {productsLoading ? (
         <p className="text-[var(--text-secondary)]">Carregando...</p>

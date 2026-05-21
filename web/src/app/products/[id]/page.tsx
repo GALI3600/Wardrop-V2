@@ -10,6 +10,7 @@ import { SinglePriceChart, ComparisonPriceChart } from "@/components/PriceChart"
 import ComparisonTable from "@/components/ComparisonTable";
 import MarketplaceBadge from "@/components/MarketplaceBadge";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import TimeframeSelector from "@/components/TimeframeSelector";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -17,22 +18,23 @@ export default function ProductDetailPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const productId = params.id as string;
+  const [timeframe, setTimeframe] = useState("mes");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["product-history", productId],
-    queryFn: () => getProductHistory(productId),
+    queryKey: ["product-history", productId, timeframe],
+    queryFn: () => getProductHistory(productId, timeframe),
   });
 
   const groupId = data?.product.group_id;
   const { data: groupData } = useQuery({
-    queryKey: ["group-comparison", groupId],
-    queryFn: () => getGroupComparison(groupId!),
+    queryKey: ["group-comparison", groupId, timeframe],
+    queryFn: () => getGroupComparison(groupId!, timeframe),
     enabled: !!groupId,
   });
 
   const { data: trackedProducts } = useQuery({
     queryKey: ["tracked-products"],
-    queryFn: getTrackedProducts,
+    queryFn: () => getTrackedProducts(),
     enabled: !!user,
   });
 
@@ -129,21 +131,29 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Comparison table + multi-marketplace chart (if grouped) */}
-      {groupData && (
-        <>
-          <ComparisonTable
-            products={groupData.group.products}
-            priceHistories={groupData.price_histories}
-          />
-          <ComparisonPriceChart priceHistories={groupData.price_histories} />
-        </>
-      )}
+      {/* Timeframe selector + charts section */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Histórico de Preços</h3>
+          <TimeframeSelector value={timeframe} onChange={setTimeframe} />
+        </div>
 
-      {/* Single price chart (only if not grouped) */}
-      {!groupId && history.length > 0 && (
-        <SinglePriceChart history={history} />
-      )}
+        {/* Comparison table + multi-marketplace chart (if grouped) */}
+        {groupData && (
+          <>
+            <ComparisonTable
+              products={groupData.group.products}
+              priceHistories={groupData.price_histories}
+            />
+            <ComparisonPriceChart priceHistories={groupData.price_histories} />
+          </>
+        )}
+
+        {/* Single price chart (only if not grouped) */}
+        {!groupId && (
+          <SinglePriceChart history={history || []} />
+        )}
+      </div>
     </div>
   );
 }

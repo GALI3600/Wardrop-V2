@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -13,6 +13,7 @@ from app.schemas.product import ProductOut, ProductListItem
 from app.schemas.user import TrackRequest
 from app.services.auth import get_current_user
 from app.services.product_enrichment import enrich_product_with_analytics
+from app.utils.timeframe import Timeframe
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,7 @@ def untrack_product(
 
 @router.get("/products", response_model=list[ProductListItem])
 def get_tracked_products(
+    timeframe: Timeframe = Query(default=Timeframe.MONTH),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -123,10 +125,10 @@ def get_tracked_products(
             key=lambda p: float(p.current_price) if p.current_price is not None else float("inf"),
         )
         cheapest = sorted_by_price[0]
-        result.append(enrich_product_with_analytics(db, cheapest, group_products))
+        result.append(enrich_product_with_analytics(db, cheapest, group_products, timeframe))
 
     # Enrich standalone products
     for product in standalone_products:
-        result.append(enrich_product_with_analytics(db, product))
+        result.append(enrich_product_with_analytics(db, product, None, timeframe))
 
     return result

@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 from app.db.database import get_db
 from app.models.price_history import PriceHistory
 from app.models.product import Product, ProductGroup
+from app.utils.timeframe import Timeframe, get_cutoff_date
 from app.schemas.product import (
     FilterOptionsResponse,
     GroupComparisonOut,
@@ -148,6 +149,7 @@ def list_products(
     sort_order: str = "desc",
     page: int = 1,
     page_size: int = 24,
+    timeframe: Timeframe = Query(default=Timeframe.MONTH),
     db: Session = Depends(get_db),
 ):
     """Public endpoint: list products grouped by group_id."""
@@ -186,11 +188,11 @@ def list_products(
             key=lambda p: float(p.current_price) if p.current_price is not None else float("inf"),
         )
         cheapest = sorted_by_price[0]
-        display_items.append(enrich_product_with_analytics(db, cheapest, products))
+        display_items.append(enrich_product_with_analytics(db, cheapest, products, timeframe))
 
     # Enrich standalone products
     for product in standalone:
-        display_items.append(enrich_product_with_analytics(db, product))
+        display_items.append(enrich_product_with_analytics(db, product, None, timeframe))
 
     # Sort
     sort_key = {
@@ -257,17 +259,23 @@ def get_product(product_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/{product_id}/history", response_model=ProductHistoryOut)
-def get_product_history(product_id: UUID, db: Session = Depends(get_db)):
+def get_product_history(
+    product_id: UUID,
+    timeframe: Timeframe = Query(default=Timeframe.MONTH),
+    db: Session = Depends(get_db)
+):
     """Get product with full price history."""
     product = db.get(Product, product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    history = db.execute(
-        select(PriceHistory)
-        .where(PriceHistory.product_id == product_id)
-        .order_by(PriceHistory.scraped_at.asc())
-    ).scalars().all()
+    # Filter history by timeframe
+    cutoff_date = get_cutoff_date(timeframe)
+    query = select(PriceHistory).where(PriceHistory.product_id == product_id)
+    if cutoff_date:
+        query = query.where(PriceHistory.scraped_at >= cutoff_date)
+    query = query.order_by(PriceHistory.scraped_at.asc())
+    history = db.execute(query).scalars().all()
 
     return ProductHistoryOut(
         product=ProductOut.model_validate(product),
@@ -299,7 +307,11 @@ def list_product_groups(db: Session = Depends(get_db)):
 
 
 @router.get("/groups/{group_id}/compare", response_model=GroupComparisonOut)
-def compare_group(group_id: UUID, db: Session = Depends(get_db)):
+def compare_group(
+    group_id: UUID,
+    timeframe: Timeframe = Query(default=Timeframe.MONTH),
+    db: Session = Depends(get_db)
+):
     """Get full comparison data for a product group (prices per marketplace)."""
     group = db.get(ProductGroup, group_id)
     if not group:
@@ -309,14 +321,16 @@ def compare_group(group_id: UUID, db: Session = Depends(get_db)):
         select(Product).where(Product.group_id == group_id)
     ).scalars().all()
 
+    # Filter histories by timeframe
+    cutoff_date = get_cutoff_date(timeframe)
     price_histories = {}
     for product in products:
         marketplace = product.marketplace or product.url
-        history = db.execute(
-            select(PriceHistory)
-            .where(PriceHistory.product_id == product.id)
-            .order_by(PriceHistory.scraped_at.asc())
-        ).scalars().all()
+        query = select(PriceHistory).where(PriceHistory.product_id == product.id)
+        if cutoff_date:
+            query = query.where(PriceHistory.scraped_at >= cutoff_date)
+        query = query.order_by(PriceHistory.scraped_at.asc())
+        history = db.execute(query).scalars().all()
         price_histories[marketplace] = [
             PriceHistoryOut.model_validate(h) for h in history
         ]

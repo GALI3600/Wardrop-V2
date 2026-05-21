@@ -9,7 +9,15 @@ interface SparklineChartProps {
 }
 
 export default function SparklineChart({ data, color = "#6366f1" }: SparklineChartProps) {
-  if (data.length < 2) return null;
+  if (data.length < 2) {
+    return (
+      <div className="w-full h-10 flex items-center justify-center">
+        <span className="text-[10px] text-[var(--text-muted)] italic">
+          Sem dados suficientes
+        </span>
+      </div>
+    );
+  }
 
   const chartData = data.map((d) => ({ price: Number(d.price) }));
 

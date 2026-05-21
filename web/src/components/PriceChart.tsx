@@ -103,6 +103,21 @@ interface SingleChartProps {
 
 export function SinglePriceChart({ history }: SingleChartProps) {
   const ct = useChartTheme();
+
+  if (!history || history.length === 0) {
+    return (
+      <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">Histórico de Preços</h3>
+        <div className="h-72 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-[var(--text-muted)] mb-2">Sem dados para este período</p>
+            <p className="text-xs text-[var(--text-muted)]">Tente selecionar um período maior</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const data = history.map((h) => ({
     date: formatDate(h.scraped_at),
     price: Number(h.price),
@@ -167,6 +182,25 @@ interface MultiChartProps {
 
 export function ComparisonPriceChart({ priceHistories }: MultiChartProps) {
   const ct = useChartTheme();
+
+  // Check if there's any data
+  const hasData = Object.values(priceHistories).some(history => history && history.length > 0);
+
+  if (!hasData) {
+    return (
+      <div className="bg-[var(--bg-card)] rounded-xl p-6 mt-4" style={{ boxShadow: "var(--shadow)" }}>
+        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
+          Comparativo de Preços
+        </h3>
+        <div className="h-72 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-[var(--text-muted)] mb-2">Sem dados para este período</p>
+            <p className="text-xs text-[var(--text-muted)]">Tente selecionar um período maior</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Collect all dates
   const allDates = new Set<string>();

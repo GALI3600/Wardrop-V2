@@ -5,7 +5,13 @@ interface TrendIndicatorProps {
 }
 
 export default function TrendIndicator({ pct }: TrendIndicatorProps) {
-  if (pct === null || pct === undefined) return null;
+  if (pct === null || pct === undefined) {
+    return (
+      <span className="text-xs text-[var(--text-muted)] italic">
+        Sem dados
+      </span>
+    );
+  }
 
   if (Math.abs(pct) < 0.5) {
     return (

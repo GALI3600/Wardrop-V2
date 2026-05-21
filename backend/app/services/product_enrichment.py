@@ -6,12 +6,14 @@ from sqlalchemy.orm import Session
 from app.models.price_history import PriceHistory
 from app.models.product import Product, ProductGroup
 from app.schemas.product import ProductListItem, MarketplacePrice, SparklinePoint
+from app.utils.timeframe import Timeframe, get_cutoff_date
 
 
 def enrich_product_with_analytics(
     db: Session,
     product: Product,
-    all_siblings: list[Product] | None = None
+    all_siblings: list[Product] | None = None,
+    timeframe: Timeframe = Timeframe.MONTH
 ) -> ProductListItem:
     """
     Enrich a product with analytics data (sparkline, price trends, stats).
@@ -21,6 +23,7 @@ def enrich_product_with_analytics(
         product: The product to enrich (for grouped products, pass the cheapest one)
         all_siblings: For grouped products, list of all products in the group.
                      If None, will be fetched from database using product.group_id
+        timeframe: Time window for price history filtering (default: MONTH)
 
     Returns:
         ProductListItem with full analytics data
@@ -57,15 +60,18 @@ def enrich_product_with_analytics(
         current_min = min(current_prices) if current_prices else None
         current_max = max(current_prices) if current_prices else None
 
-        # Fetch price history for cheapest product (for sparkline)
-        cheapest_history = db.execute(
-            select(PriceHistory)
-            .where(PriceHistory.product_id == cheapest.id)
-            .order_by(PriceHistory.scraped_at.asc())
-        ).scalars().all()
+        # Get timeframe cutoff date
+        cutoff_date = get_cutoff_date(timeframe)
 
-        sparkline_entries = cheapest_history[-20:] if len(cheapest_history) > 20 else cheapest_history
-        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in sparkline_entries]
+        # Fetch price history for cheapest product (filtered by timeframe for sparkline)
+        query = select(PriceHistory).where(PriceHistory.product_id == cheapest.id)
+        if cutoff_date:
+            query = query.where(PriceHistory.scraped_at >= cutoff_date)
+        query = query.order_by(PriceHistory.scraped_at.asc())
+        cheapest_history = db.execute(query).scalars().all()
+
+        # Use all filtered entries (no 20-entry limit)
+        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in cheapest_history]
 
         # Fetch history for ALL siblings to calculate lowest/highest
         all_history_prices: list[float] = []
@@ -80,7 +86,7 @@ def enrich_product_with_analytics(
 
         # Calculate price change percentage from cheapest product's history
         cheapest_prices = [float(h.price) for h in cheapest_history]
-        if len(cheapest_prices) >= 2:
+        if len(cheapest_prices) >= 2 and cheapest_prices[0] > 0:
             price_change_pct = ((cheapest_prices[-1] - cheapest_prices[0]) / cheapest_prices[0]) * 100
         else:
             price_change_pct = None
@@ -113,24 +119,36 @@ def enrich_product_with_analytics(
         )
     else:
         # For standalone products
-        history = db.execute(
-            select(PriceHistory)
-            .where(PriceHistory.product_id == product.id)
-            .order_by(PriceHistory.scraped_at.asc())
-        ).scalars().all()
+        # Get timeframe cutoff date
+        cutoff_date = get_cutoff_date(timeframe)
 
-        sparkline_entries = history[-20:] if len(history) > 20 else history
-        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in sparkline_entries]
+        # Fetch price history filtered by timeframe
+        query = select(PriceHistory).where(PriceHistory.product_id == product.id)
+        if cutoff_date:
+            query = query.where(PriceHistory.scraped_at >= cutoff_date)
+        query = query.order_by(PriceHistory.scraped_at.asc())
+        history = db.execute(query).scalars().all()
 
+        # Use all filtered entries (no 20-entry limit)
+        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in history]
+
+        # Calculate price change from filtered history
         prices = [float(h.price) for h in history]
-        lowest_price = min(prices) if prices else None
-        highest_price = max(prices) if prices else None
-        current = float(product.current_price) if product.current_price else None
-
         if len(prices) >= 2:
             price_change_pct = ((prices[-1] - prices[0]) / prices[0]) * 100 if prices[0] else None
         else:
             price_change_pct = None
+
+        # Fetch ALL history for lowest/highest (not filtered by timeframe)
+        all_history = db.execute(
+            select(PriceHistory.price)
+            .where(PriceHistory.product_id == product.id)
+        ).scalars().all()
+        all_prices = [float(h) for h in all_history]
+        lowest_price = min(all_prices) if all_prices else None
+        highest_price = max(all_prices) if all_prices else None
+
+        current = float(product.current_price) if product.current_price else None
 
         is_at_lowest = current is not None and lowest_price is not None and current <= lowest_price
 
