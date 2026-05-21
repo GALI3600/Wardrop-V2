@@ -4,6 +4,7 @@ import type {
   GroupComparisonOut,
   ListParams,
   ProductHistoryOut,
+  ProductListItem,
   ProductListResponse,
   ProductOut,
   UserOut,
@@ -69,8 +70,8 @@ export function getMe(): Promise<UserOut> {
 
 // Tracking
 
-export function getTrackedProducts(): Promise<ProductOut[]> {
-  return fetchAuthApi<ProductOut[]>("/tracking/products");
+export function getTrackedProducts(): Promise<ProductListItem[]> {
+  return fetchAuthApi<ProductListItem[]>("/tracking/products");
 }
 
 export function trackProduct(productId: string): Promise<{ status: string }> {

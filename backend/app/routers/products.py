@@ -35,6 +35,7 @@ from app.services.product_matcher import (
     trigger_reverse_similarity,
 )
 from app.services.similarity_matcher import match_product_by_similarity
+from app.services.product_enrichment import enrich_product_with_analytics
 
 router = APIRouter()
 
@@ -175,129 +176,21 @@ def list_products(
         for p in all_siblings:
             group_products.setdefault(p.group_id, []).append(p)
 
-    # Step 3: build display items
+    # Step 3: build display items using enrichment service
     display_items: list[ProductListItem] = []
 
+    # Enrich grouped products
     for group_id, products in group_products.items():
-        group = db.get(ProductGroup, group_id)
         sorted_by_price = sorted(
             products,
             key=lambda p: float(p.current_price) if p.current_price is not None else float("inf"),
         )
         cheapest = sorted_by_price[0]
+        display_items.append(enrich_product_with_analytics(db, cheapest, products))
 
-        mp_prices = [
-            MarketplacePrice(
-                marketplace=p.marketplace,
-                current_price=p.current_price,
-                product_id=p.id,
-            )
-            for p in sorted_by_price
-        ]
-
-        current_prices = [float(p.current_price) for p in products if p.current_price is not None]
-        current_min = min(current_prices) if current_prices else None
-        current_max = max(current_prices) if current_prices else None
-
-        # History & sparkline from cheapest product
-        cheapest_history = db.execute(
-            select(PriceHistory)
-            .where(PriceHistory.product_id == cheapest.id)
-            .order_by(PriceHistory.scraped_at.asc())
-        ).scalars().all()
-
-        sparkline_entries = cheapest_history[-20:] if len(cheapest_history) > 20 else cheapest_history
-        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in sparkline_entries]
-
-        # Stats from ALL products' histories
-        all_history_prices: list[float] = []
-        for p in products:
-            hist = db.execute(
-                select(PriceHistory.price).where(PriceHistory.product_id == p.id)
-            ).scalars().all()
-            all_history_prices.extend(float(pr) for pr in hist)
-
-        lowest_price = min(all_history_prices) if all_history_prices else None
-        highest_price = max(all_history_prices) if all_history_prices else None
-
-        cheapest_prices = [float(h.price) for h in cheapest_history]
-        if len(cheapest_prices) >= 2:
-            price_change_pct = ((cheapest_prices[-1] - cheapest_prices[0]) / cheapest_prices[0]) * 100
-        else:
-            price_change_pct = None
-
-        is_at_lowest = current_min is not None and lowest_price is not None and current_min <= lowest_price
-
-        display_items.append(ProductListItem(
-            id=cheapest.id,
-            url=cheapest.url,
-            marketplace=cheapest.marketplace,
-            name=(group.canonical_name if group and group.canonical_name else cheapest.name),
-            image_url=cheapest.image_url or next((p.image_url for p in products if p.image_url), None),
-            current_price=current_min,
-            currency=cheapest.currency,
-            seller=cheapest.seller,
-            ean=group.ean if group else cheapest.ean,
-            group_id=group_id,
-            last_scraped_at=cheapest.last_scraped_at,
-            created_at=min(p.created_at for p in products),
-            marketplace_prices=mp_prices,
-            price_max=current_max if current_max != current_min else None,
-            sparkline=sparkline,
-            price_change_pct=round(price_change_pct, 2) if price_change_pct is not None else None,
-            lowest_price=lowest_price,
-            highest_price=highest_price,
-            is_at_lowest=is_at_lowest,
-        ))
-
-    # Standalone products
+    # Enrich standalone products
     for product in standalone:
-        history = db.execute(
-            select(PriceHistory)
-            .where(PriceHistory.product_id == product.id)
-            .order_by(PriceHistory.scraped_at.asc())
-        ).scalars().all()
-
-        sparkline_entries = history[-20:] if len(history) > 20 else history
-        sparkline = [SparklinePoint(price=h.price, scraped_at=h.scraped_at) for h in sparkline_entries]
-
-        prices = [float(h.price) for h in history]
-        lowest_price = min(prices) if prices else None
-        highest_price = max(prices) if prices else None
-        current = float(product.current_price) if product.current_price else None
-
-        if len(prices) >= 2:
-            price_change_pct = ((prices[-1] - prices[0]) / prices[0]) * 100 if prices[0] else None
-        else:
-            price_change_pct = None
-
-        is_at_lowest = current is not None and lowest_price is not None and current <= lowest_price
-
-        display_items.append(ProductListItem(
-            id=product.id,
-            url=product.url,
-            marketplace=product.marketplace,
-            name=product.name,
-            image_url=product.image_url,
-            current_price=product.current_price,
-            currency=product.currency,
-            seller=product.seller,
-            ean=product.ean,
-            group_id=None,
-            last_scraped_at=product.last_scraped_at,
-            created_at=product.created_at,
-            marketplace_prices=[MarketplacePrice(
-                marketplace=product.marketplace,
-                current_price=product.current_price,
-                product_id=product.id,
-            )],
-            price_max=None,
-            sparkline=sparkline,
-            price_change_pct=round(price_change_pct, 2) if price_change_pct is not None else None,
-            lowest_price=lowest_price,
-            highest_price=highest_price,
-            is_at_lowest=is_at_lowest,
-        ))
+        display_items.append(enrich_product_with_analytics(db, product))
 
     # Sort
     sort_key = {

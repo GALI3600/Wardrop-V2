@@ -9,9 +9,10 @@ from app.db.database import get_db
 from app.models.price_history import UserProduct
 from app.models.product import Product
 from app.models.user import User
-from app.schemas.product import ProductOut
+from app.schemas.product import ProductOut, ProductListItem
 from app.schemas.user import TrackRequest
 from app.services.auth import get_current_user
+from app.services.product_enrichment import enrich_product_with_analytics
 
 logger = logging.getLogger(__name__)
 
@@ -86,11 +87,12 @@ def untrack_product(
     return {"status": "untracked"}
 
 
-@router.get("/products", response_model=list[ProductOut])
+@router.get("/products", response_model=list[ProductListItem])
 def get_tracked_products(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    """Get all tracked products for the current user with analytics."""
     user_products = db.execute(
         select(UserProduct).where(UserProduct.user_id == user.id)
     ).scalars().all()
@@ -99,5 +101,32 @@ def get_tracked_products(
         db.get(Product, up.product_id)
         for up in user_products
     ]
+    products = [p for p in products if p is not None]
 
-    return [p for p in products if p is not None]
+    # Group products by group_id
+    grouped_products: dict[UUID, list[Product]] = {}
+    standalone_products: list[Product] = []
+
+    for product in products:
+        if product.group_id:
+            grouped_products.setdefault(product.group_id, []).append(product)
+        else:
+            standalone_products.append(product)
+
+    # Build enriched result
+    result: list[ProductListItem] = []
+
+    # Enrich grouped products
+    for group_id, group_products in grouped_products.items():
+        sorted_by_price = sorted(
+            group_products,
+            key=lambda p: float(p.current_price) if p.current_price is not None else float("inf"),
+        )
+        cheapest = sorted_by_price[0]
+        result.append(enrich_product_with_analytics(db, cheapest, group_products))
+
+    # Enrich standalone products
+    for product in standalone_products:
+        result.append(enrich_product_with_analytics(db, product))
+
+    return result

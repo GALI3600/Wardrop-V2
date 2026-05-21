@@ -5,6 +5,11 @@ import Link from "next/link";
 import { BellOff } from "lucide-react";
 import MarketplaceBadge from "./MarketplaceBadge";
 import ConfirmDialog from "./ConfirmDialog";
+import SparklineChart from "./SparklineChart";
+import TrendIndicator from "./TrendIndicator";
+import BestPriceBadge from "./BestPriceBadge";
+import { getMpColor } from "@/lib/marketplaces";
+import type { SparklinePoint } from "@/lib/types";
 
 interface TrackedProductCardProps {
   id: string;
@@ -15,6 +20,9 @@ interface TrackedProductCardProps {
   minPrice: number | null;
   maxPrice: number | null;
   currency: string;
+  sparkline?: SparklinePoint[];
+  priceChangePct?: number | null;
+  isAtLowest?: boolean;
   onUntrack: () => void;
 }
 
@@ -27,6 +35,9 @@ export default function TrackedProductCard({
   minPrice,
   maxPrice,
   currency,
+  sparkline,
+  priceChangePct,
+  isAtLowest,
   onUntrack,
 }: TrackedProductCardProps) {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -105,6 +116,7 @@ export default function TrackedProductCard({
             ) : (
               <MarketplaceBadge marketplace={marketplace} />
             )}
+            <BestPriceBadge isAtLowest={isAtLowest || false} />
           </div>
 
           <p
@@ -114,7 +126,20 @@ export default function TrackedProductCard({
             {name || "Produto"}
           </p>
 
-          <p className="text-xl font-bold text-[var(--price-color)]">{priceDisplay}</p>
+          <div className="flex items-end justify-between gap-2">
+            <div>
+              <p className="text-xl font-bold text-[var(--price-color)]">{priceDisplay}</p>
+              <TrendIndicator pct={priceChangePct || null} />
+            </div>
+            {sparkline && sparkline.length >= 2 && (
+              <div className="w-20">
+                <SparklineChart
+                  data={sparkline}
+                  color={getMpColor(marketplace || "")}
+                />
+              </div>
+            )}
+          </div>
         </div>
         </div>
       </Link>
